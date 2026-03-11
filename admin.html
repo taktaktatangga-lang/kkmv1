@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<title>Dashboard Admin</title>
+
+<style>
+
+body{
+font-family:Arial;
+padding:20px;
+background:#f4f4f4;
+}
+
+.card{
+background:white;
+padding:20px;
+margin-bottom:15px;
+border-radius:10px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h2>Dashboard Admin</h2>
+
+<div class="card">
+
+Total Transaksi Hari Ini
+
+<h1 id="total"></h1>
+
+</div>
+
+<div class="card">
+
+<h3>Top 10 Online</h3>
+
+<div id="online"></div>
+
+</div>
+
+<div class="card">
+
+<h3>Top 10 Offline</h3>
+
+<div id="offline"></div>
+
+</div>
+
+<script>
+
+var API="https://script.google.com/macros/s/AKfycbxuxxhKBo0Hf2JVN55UEOO8sJI6qVQOR7rwQn0RBks7CouDce21ennbrcWLiasvmSfG/exec"
+
+function load(){
+
+fetch(API+"?action=admin")
+
+.then(r=>r.json())
+
+.then(d=>{
+
+document.getElementById("total").innerHTML=d.total_today
+
+var o=""
+d.top_online.forEach((x,i)=>{
+o+=(i+1)+". "+x.id+" ("+x.total+")<br>"
+})
+
+document.getElementById("online").innerHTML=o
+
+
+var f=""
+d.top_offline.forEach((x,i)=>{
+f+=(i+1)+". "+x.id+" ("+x.total+")<br>"
+})
+
+document.getElementById("offline").innerHTML=f
+
+})
+
+}
+
+load()
+
+setInterval(load,5000)
+
+</script>
+
+</body>
+</html>
