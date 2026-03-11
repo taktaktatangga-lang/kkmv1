@@ -1,93 +1,101 @@
 <!DOCTYPE html>
-<html>
+<html lang="id">
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard Rider</title>
 <style>
-body{
-  font-family:Arial;
-  background:#f4f4f4;
-  padding:15px;
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f4f4;
+  padding: 15px;
+  margin: 0;
 }
-.card{
-  background:white;
-  padding:15px;
-  border-radius:10px;
-  margin-bottom:10px;
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 10px;
+  margin-bottom: 15px;
 }
-button{
-  padding:12px;
-  width:100%;
-  background:#6B0F1A;
-  color:white;
-  border:none;
-  margin-top:5px;
-  cursor:pointer;
+button {
+  padding: 12px;
+  width: 100%;
+  background: #6B0F1A;
+  color: white;
+  border: none;
+  cursor: pointer;
+  margin-top: 5px;
 }
-table{
-  width:100%;
+table {
+  width: 100%;
   border-collapse: collapse;
 }
-input, select{
-  width:100%;
-  padding:6px;
-  box-sizing:border-box;
+input, select {
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
 }
-td.keterangan{
-  width:30%;
+td.keterangan {
+  width: 30%;
 }
-td.nilai, td.jenis{
-  width:35%;
+td.nilai, td.jenis {
+  width: 35%;
 }
 </style>
 </head>
 <body>
 
+<!-- Card Nama & Saldo -->
 <div class="card">
-<h3 id="nama"></h3>
-Saldo
-<h2 id="saldo">0</h2>
+  <h3 id="nama"></h3>
+  Saldo
+  <h2 id="saldo">0</h2>
 </div>
 
+<!-- Card Transaksi Hari Ini -->
 <div class="card">
-Transaksi Hari Ini<br>
-Online : <b id="online">0</b><br>
-Offline : <b id="offline">0</b>
+  Transaksi Hari Ini<br>
+  Online : <b id="online">0</b><br>
+  Offline : <b id="offline">0</b>
 </div>
 
+<!-- Card Rank Bulan Ini -->
 <div class="card">
-Rank Bulan Ini<br>
-Online : <span id="rankOnline"></span><br>
-Offline : <span id="rankOffline"></span>
+  Rank Bulan Ini<br>
+  Online : <span id="rankOnline"></span><br>
+  Offline : <span id="rankOffline"></span>
 </div>
 
+<!-- Card Tabel Transaksi -->
 <div class="card">
-<h4>Transaksi</h4>
-<table id="tabel">
-<tr>
-<th>Nilai</th><th>Jenis</th><th>Keterangan</th>
-</tr>
-<tr>
-<td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-<td class="jenis">
-  <select>
-    <option value="online">online</option>
-    <option value="offline">offline</option>
-  </select>
-</td>
-<td class="keterangan"><input></td>
-</tr>
-</table>
-<button onclick="kirim()">Simpan Transaksi</button>
+  <h4>Transaksi</h4>
+  <table id="tabel">
+    <tr>
+      <th>Nilai</th>
+      <th>Jenis</th>
+      <th>Keterangan</th>
+    </tr>
+    <tr>
+      <td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
+      <td class="jenis">
+        <select>
+          <option value="online">online</option>
+          <option value="offline">offline</option>
+        </select>
+      </td>
+      <td class="keterangan"><input></td>
+    </tr>
+  </table>
+  <button onclick="kirim()">Simpan Transaksi</button>
 </div>
 
+<!-- Card Top Up -->
 <div class="card">
-<h4>Top Up Saldo Deposit</h4>
-Nilai TOP UP:<br>
-<input type="number" id="topupNilai" placeholder="Masukkan nominal TOP UP"><br><br>
-Keterangan:<br>
-<input type="text" id="topupKet" placeholder="Keterangan"><br><br>
-<button onclick="topupSaldo()">TOP UP</button>
+  <h4>Top Up Saldo Deposit</h4>
+  Nilai TOP UP:<br>
+  <input type="number" id="topupNilai" placeholder="Masukkan nominal TOP UP"><br><br>
+  Keterangan:<br>
+  <input type="text" id="topupKet" placeholder="Keterangan"><br><br>
+  <button onclick="topupSaldo()">TOP UP</button>
 </div>
 
 <script>
@@ -97,112 +105,103 @@ var API="https://script.google.com/macros/s/AKfycbzkbr5s94Qu9Bv5FKMI1VecnMcxiB8g
 var rider = localStorage.getItem("rider");
 if(!rider){ location.href="login.html"; }
 
-document.getElementById("nama").innerHTML="Rider "+localStorage.getItem("nama");
+document.getElementById("nama").innerText = "Rider " + localStorage.getItem("nama");
 
 let dashboardData = null; // cache data
 
+// Load dashboard data
 function loadDashboard(){
   fetch(API+"?action=dashboard&id="+rider)
-    .then(r=>r.json())
-    .then(d=>{
+    .then(res => res.json())
+    .then(d => {
       dashboardData = d;
-      var saldo=Number(d.saldo)||0;
-      document.getElementById("saldo").innerHTML="Rp "+saldo.toLocaleString("id-ID");
-      document.getElementById("online").innerHTML=d.online_today;
-      document.getElementById("offline").innerHTML=d.offline_today;
-      document.getElementById("rankOnline").innerHTML="#"+d.rank_online;
-      document.getElementById("rankOffline").innerHTML="#"+d.rank_offline;
+      var saldo = Number(d.saldo) || 0;
+      document.getElementById("saldo").innerText = "Rp " + saldo.toLocaleString("id-ID");
+      document.getElementById("online").innerText = d.online_today;
+      document.getElementById("offline").innerText = d.offline_today;
+      document.getElementById("rankOnline").innerText = "#" + d.rank_online;
+      document.getElementById("rankOffline").innerText = "#" + d.rank_offline;
     })
-    .catch(err=>{
-      console.log("Gagal load dashboard", err);
-    });
+    .catch(err => console.log("Gagal load dashboard", err));
 }
 
 // Auto tambah baris transaksi
 function autoTambah(input){
-  var row=input.parentNode.parentNode;
-  var tabel=document.getElementById("tabel");
-  if(row.rowIndex==tabel.rows.length-1 && input.value!=""){
-    var r=tabel.insertRow();
-    r.innerHTML=`<td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-    <td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
-    <td class="keterangan"><input></td>`;
+  var row = input.parentNode.parentNode;
+  var tabel = document.getElementById("tabel");
+  if(row.rowIndex === tabel.rows.length - 1 && input.value !== ""){
+    var r = tabel.insertRow();
+    r.innerHTML = `<td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
+                   <td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
+                   <td class="keterangan"><input></td>`;
   }
 }
 
 // Kirim transaksi batch
 function kirim(){
-  var tabel=document.getElementById("tabel");
-  var data=[];
-  for(var i=1;i<tabel.rows.length;i++){
-    var nilai=tabel.rows[i].cells[0].children[0].value;
-    var jenis=tabel.rows[i].cells[1].children[0].value;
-    var ket=tabel.rows[i].cells[2].children[0].value;
-    if(nilai!=""){
-      data.push({nilai:Number(nilai),jenis:jenis,ket:ket});
+  var tabel = document.getElementById("tabel");
+  var data = [];
+  for(var i=1; i<tabel.rows.length; i++){
+    var nilai = tabel.rows[i].cells[0].children[0].value;
+    var jenis = tabel.rows[i].cells[1].children[0].value;
+    var ket = tabel.rows[i].cells[2].children[0].value;
+    if(nilai !== ""){
+      data.push({nilai: Number(nilai), jenis: jenis, ket: ket});
     }
   }
-  if(data.length==0){ alert("Tidak ada transaksi"); return; }
+  if(data.length === 0){ alert("Tidak ada transaksi"); return; }
 
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({action:"transaksi_batch",id:rider,data:data})
+  fetch(API, {
+    method: "POST",
+    body: JSON.stringify({action:"transaksi_batch", id:rider, data:data})
   })
-  .then(r=>r.json())
-  .then(res=>{
+  .then(res => res.json())
+  .then(res => {
     alert("Transaksi tersimpan");
     loadDashboard();
     // Reset tabel
-    tabel.innerHTML=`<tr>
-    <th>Nilai</th><th>Jenis</th><th>Keterangan</th>
-    </tr><tr>
-    <td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-    <td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
-    <td class="keterangan"><input></td>
+    tabel.innerHTML = `<tr>
+      <th>Nilai</th>
+      <th>Jenis</th>
+      <th>Keterangan</th>
+    </tr>
+    <tr>
+      <td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
+      <td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
+      <td class="keterangan"><input></td>
     </tr>`;
   })
-  .catch(err=>{
-    alert("Gagal simpan transaksi");
-    console.log(err);
-  });
+  .catch(err => { alert("Gagal simpan transaksi"); console.log(err); });
 }
 
-// Fungsi Top Up Saldo Deposit
+// Top Up Saldo Deposit
 function topupSaldo(){
   var nominal = Number(document.getElementById("topupNilai").value);
   var ket = document.getElementById("topupKet").value.trim();
 
-  if(!nominal || nominal <= 0){ 
-    alert("Masukkan nominal TOP UP valid!"); 
-    return; 
-  }
-  if(!ket){ 
-    alert("Masukkan keterangan!"); 
-    return; 
-  }
+  if(!nominal || nominal <= 0){ alert("Masukkan nominal TOP UP valid!"); return; }
+  if(!ket){ alert("Masukkan keterangan!"); return; }
 
-  fetch(API,{
+  fetch(API, {
     method: "POST",
     body: JSON.stringify({action:"topup", id:rider, nominal:nominal, ket:ket})
   })
-  .then(r=>r.json())
-  .then(res=>{
+  .then(res => res.json())
+  .then(res => {
     alert("TOP UP berhasil!");
-    // Update saldo langsung di dashboard
+    // Update saldo langsung
     var currentSaldo = Number(document.getElementById("saldo").innerText.replace(/[^0-9]/g,""));
     document.getElementById("saldo").innerText = "Rp " + (currentSaldo + nominal).toLocaleString("id-ID");
     // Reset input
     document.getElementById("topupNilai").value = "";
     document.getElementById("topupKet").value = "";
   })
-  .catch(err=>{
-    alert("Gagal TOP UP");
-    console.log(err);
-  });
+  .catch(err => { alert("Gagal TOP UP"); console.log(err); });
 }
 
+// Load awal dan interval
 loadDashboard();
-setInterval(loadDashboard,5000);
+setInterval(loadDashboard, 5000);
 </script>
 
 </body>
