@@ -4,183 +4,96 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard Rider</title>
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background: #f4f4f4;
-  padding: 15px;
-  margin: 0;
-}
-.card {
-  background: white;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 15px;
-}
-button {
-  padding: 12px;
-  width: 100%;
-  background: #6B0F1A;
-  color: white;
-  border: none;
-  cursor: pointer;
-  margin-top: 5px;
-}
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-input, select {
-  width: 100%;
-  padding: 6px;
-  box-sizing: border-box;
-}
-td.keterangan { width: 30%; }
-td.nilai, td.jenis { width: 35%; }
+body { font-family: Arial; background:#f4f4f4; padding:15px; margin:0;}
+.card { background:white; padding:15px; border-radius:10px; margin-bottom:15px; }
+button { padding:12px; width:100%; background:#6B0F1A; color:white; border:none; cursor:pointer; margin-top:5px;}
+table { width:100%; border-collapse: collapse; }
+td, th { padding:8px; border:1px solid #ccc; }
+td.keterangan{ width:30%; } td.nilai, td.jenis{ width:35%; }
 </style>
 </head>
 <body>
 
-<!-- Card Nama & Saldo -->
 <div class="card">
-  <h3 id="nama"></h3>
-  Saldo
-  <h2 id="saldo">0</h2>
+<h3 id="nama"></h3>
+Saldo
+<h2 id="saldo">0</h2>
 </div>
 
-<!-- Card Transaksi Hari Ini -->
 <div class="card">
-  Transaksi Hari Ini<br>
-  Online : <b id="online">0</b><br>
-  Offline : <b id="offline">0</b>
+<h4>Transaksi</h4>
+<table id="tabel">
+<tr><th>Nilai</th><th>Jenis</th><th>Keterangan</th></tr>
+<tr>
+<td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
+<td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
+<td class="keterangan"><input placeholder="Keterangan"></td>
+</tr>
+</table>
 </div>
 
-<!-- Card Rank Bulan Ini -->
 <div class="card">
-  Rank Bulan Ini<br>
-  Online : <span id="rankOnline"></span><br>
-  Offline : <span id="rankOffline"></span>
+<h4>Top Up Saldo Deposit</h4>
+Nilai TOP UP:<br><input type="number" id="topupNilai" placeholder="Masukkan nominal Top Up"><br><br>
+Keterangan:<br><input type="text" id="topupKet" placeholder="Keterangan"><br>
 </div>
 
-<!-- Card Tabel Transaksi -->
 <div class="card">
-  <h4>Transaksi</h4>
-  <table id="tabel">
-    <tr>
-      <th>Nilai</th>
-      <th>Jenis</th>
-      <th>Keterangan</th>
-    </tr>
-    <tr>
-      <td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-      <td class="jenis">
-        <select>
-          <option value="online">online</option>
-          <option value="offline">offline</option>
-        </select>
-      </td>
-      <td class="keterangan"><input placeholder="Keterangan"></td>
-    </tr>
-  </table>
-</div>
-
-<!-- Input Top Up -->
-<div class="card">
-  <h4>Top Up Saldo Deposit</h4>
-  Nilai TOP UP:<br>
-  <input type="number" id="topupNilai" placeholder="Masukkan nominal Top Up"><br><br>
-  Keterangan:<br>
-  <input type="text" id="topupKet" placeholder="Keterangan"><br>
-</div>
-
-<!-- Tombol Simpan Rekapan -->
-<div class="card">
-  <button onclick="kirim()">SIMPAN REKAPAN</button>
+<button onclick="kirim()">SIMPAN REKAPAN</button>
 </div>
 
 <script>
-var API="https://script.google.com/macros/s/AKfycbynWiNGgJkLnkX2Tn2stmtbAW2JInARr3WaW4VKx34i52H87lJUVv763fifDMKYgzxi/exec"
-
-// Cek login
-var rider = localStorage.getItem("rider");
+var API="https://script.google.com/macros/s/AKfycbw_IxZ0HdQgdTXlcZ8JphMSKcEc-WUXJkLjNSX9pnr_g0LoZ41z6AycK2ZHVknbyvDf/exec"; // ganti URL Web App
+var rider=localStorage.getItem("rider");
 if(!rider){ location.href="login.html"; }
 
-document.getElementById("nama").innerText = "Rider " + localStorage.getItem("nama");
+document.getElementById("nama").innerText="Rider "+localStorage.getItem("nama");
 
-// Load dashboard data
 function loadDashboard(){
   fetch(API+"?action=dashboard&id="+rider)
-    .then(res => res.json())
-    .then(d => {
-      var saldo = Number(d.saldo)||0;
-      document.getElementById("saldo").innerText = "Rp " + saldo.toLocaleString("id-ID");
-      document.getElementById("online").innerText = d.online_today;
-      document.getElementById("offline").innerText = d.offline_today;
-      document.getElementById("rankOnline").innerText = "#" + d.rank_online;
-      document.getElementById("rankOffline").innerText = "#" + d.rank_offline;
-    })
-    .catch(err => console.log(err));
+  .then(res=>res.json())
+  .then(d=>{
+    document.getElementById("saldo").innerText="Rp "+Number(d.saldo).toLocaleString("id-ID");
+  });
 }
 
-// Auto tambah baris transaksi
 function autoTambah(input){
-  var row = input.parentNode.parentNode;
-  var tabel = document.getElementById("tabel");
-  if(row.rowIndex === tabel.rows.length -1 && input.value!==""){
-    var r = tabel.insertRow();
-    r.innerHTML = `<td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-                   <td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
-                   <td class="keterangan"><input placeholder="Keterangan"></td>`;
+  var row=input.parentNode.parentNode;
+  var tabel=document.getElementById("tabel");
+  if(row.rowIndex==tabel.rows.length-1 && input.value!==""){
+    var r=tabel.insertRow();
+    r.innerHTML=`<td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
+<td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
+<td class="keterangan"><input placeholder="Keterangan"></td>`;
   }
 }
 
-// Kirim transaksi + Top Up
 function kirim(){
-  var tabel = document.getElementById("tabel");
-  var data = [];
-
-  // Ambil transaksi dari tabel
+  var tabel=document.getElementById("tabel");
+  var data=[];
   for(var i=1;i<tabel.rows.length;i++){
-    var nilai = tabel.rows[i].cells[0].children[0].value;
-    var jenis = tabel.rows[i].cells[1].children[0].value;
-    var ket = tabel.rows[i].cells[2].children[0].value;
-    if(nilai!==""){
-      data.push({nilai:Number(nilai), jenis:jenis, ket:ket});
-    }
+    var nilai=tabel.rows[i].cells[0].children[0].value;
+    var jenis=tabel.rows[i].cells[1].children[0].value;
+    var ket=tabel.rows[i].cells[2].children[0].value;
+    if(nilai!==""){ data.push({nilai:Number(nilai), jenis:jenis, ket:ket}); }
   }
-
-  // Ambil Top Up
-  var topupNilai = Number(document.getElementById("topupNilai").value);
-  var topupKet = document.getElementById("topupKet").value.trim();
-  if(topupNilai>0 && topupKet!==""){
-    data.push({nilai:topupNilai, jenis:"topup", ket:topupKet});
-  }
-
+  var topup=Number(document.getElementById("topupNilai").value);
+  var ketTopup=document.getElementById("topupKet").value.trim();
+  if(topup>0 && ketTopup!==""){ data.push({nilai:topup, jenis:"topup", ket:ketTopup}); }
   if(data.length===0){ alert("Tidak ada transaksi atau Top Up"); return; }
 
-  fetch(API,{
-    method:"POST",
-    body:JSON.stringify({action:"transaksi_batch", id:rider, data:data})
-  })
-  .then(r=>r.json())
-  .then(res=>{
+  fetch(API,{method:"POST", body:JSON.stringify({action:"transaksi_batch", id:rider, data:data})})
+  .then(res=>res.json())
+  .then(r=>{
     alert("Rekapan tersimpan!");
     loadDashboard();
-    // Reset tabel transaksi
-    tabel.innerHTML = `<tr>
-      <th>Nilai</th>
-      <th>Jenis</th>
-      <th>Keterangan</th>
-    </tr>
-    <tr>
-      <td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-      <td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
-      <td class="keterangan"><input placeholder="Keterangan"></td>
-    </tr>`;
-    // Reset Top Up
+    tabel.innerHTML=`<tr><th>Nilai</th><th>Jenis</th><th>Keterangan</th></tr>
+<tr><td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
+<td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
+<td class="keterangan"><input placeholder="Keterangan"></td></tr>`;
     document.getElementById("topupNilai").value="";
     document.getElementById("topupKet").value="";
-  })
-  .catch(err=>{alert("Gagal simpan rekapan"); console.log(err);});
+  }).catch(e=>alert("Gagal simpan rekapan"));
 }
 
 loadDashboard();
@@ -189,4 +102,3 @@ setInterval(loadDashboard,5000);
 
 </body>
 </html>
-
