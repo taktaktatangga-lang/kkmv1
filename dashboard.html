@@ -80,12 +80,24 @@ td.nilai, td.jenis {
         <select>
           <option value="online">online</option>
           <option value="offline">offline</option>
-          <option value="topup">TOP UP</option>
         </select>
       </td>
       <td class="keterangan"><input placeholder="Keterangan"></td>
     </tr>
   </table>
+</div>
+
+<!-- Card Top UP -->
+<div class="card">
+  <h4>Top UP Saldo Deposit</h4>
+  Nilai TOP UP:<br>
+  <input type="number" id="topupNilai" placeholder="Masukkan nominal TOP UP"><br><br>
+  Keterangan:<br>
+  <input type="text" id="topupKet" placeholder="Keterangan"><br>
+</div>
+
+<!-- Tombol Simpan Rekapan -->
+<div class="card">
   <button onclick="kirim()">SIMPAN REKAPAN</button>
 </div>
 
@@ -122,15 +134,17 @@ function autoTambah(input){
   if(row.rowIndex === tabel.rows.length - 1 && input.value !== ""){
     var r = tabel.insertRow();
     r.innerHTML = `<td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-                   <td class="jenis"><select><option value="online">online</option><option value="offline">offline</option><option value="topup">TOP UP</option></select></td>
+                   <td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
                    <td class="keterangan"><input placeholder="Keterangan"></td>`;
   }
 }
 
-// Kirim semua transaksi termasuk TOP UP
+// Kirim semua transaksi termasuk Top UP
 function kirim(){
   var tabel = document.getElementById("tabel");
   var data = [];
+
+  // Ambil data transaksi dari tabel
   for(var i=1; i<tabel.rows.length; i++){
     var nilai = tabel.rows[i].cells[0].children[0].value;
     var jenis = tabel.rows[i].cells[1].children[0].value;
@@ -139,7 +153,15 @@ function kirim(){
       data.push({nilai: Number(nilai), jenis: jenis, ket: ket});
     }
   }
-  if(data.length === 0){ alert("Tidak ada transaksi"); return; }
+
+  // Ambil data Top UP
+  var topupNilai = Number(document.getElementById("topupNilai").value);
+  var topupKet = document.getElementById("topupKet").value.trim();
+  if(topupNilai > 0 && topupKet !== ""){
+    data.push({nilai: topupNilai, jenis:"topup", ket: topupKet});
+  }
+
+  if(data.length === 0){ alert("Tidak ada transaksi atau Top UP"); return; }
 
   fetch(API, {
     method: "POST",
@@ -149,7 +171,7 @@ function kirim(){
   .then(res => {
     alert("Rekapan tersimpan!");
     loadDashboard();
-    // Reset tabel
+    // Reset tabel transaksi
     tabel.innerHTML = `<tr>
       <th>Nilai</th>
       <th>Jenis</th>
@@ -157,14 +179,17 @@ function kirim(){
     </tr>
     <tr>
       <td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-      <td class="jenis"><select><option value="online">online</option><option value="offline">offline</option><option value="topup">TOP UP</option></select></td>
+      <td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
       <td class="keterangan"><input placeholder="Keterangan"></td>
     </tr>`;
+    // Reset Top UP
+    document.getElementById("topupNilai").value = "";
+    document.getElementById("topupKet").value = "";
   })
   .catch(err => { alert("Gagal simpan rekapan"); console.log(err); });
 }
 
-// Load awal & interval refresh
+// Load awal dan interval refresh
 loadDashboard();
 setInterval(loadDashboard, 5000);
 </script>
