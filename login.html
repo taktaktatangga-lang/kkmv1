@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Login Rider</title>
+<style>
+body{font-family:Arial;background:#6B0F1A;display:flex;justify-content:center;align-items:center;height:100vh;}
+.box{background:white;padding:30px;border-radius:10px;width:250px;text-align:center;}
+input{width:100%;padding:10px;font-size:18px;text-align:center;}
+button{margin-top:10px;width:100%;padding:10px;background:#D4AF37;border:none;font-weight:bold;}
+</style>
+</head>
+<body>
+
+<div class="box">
+<h3>Login Rider</h3>
+<input id="id" placeholder="ID Rider">
+<button onclick="login()">MASUK</button>
+</div>
+
+<script>
+var API="https://script.google.com/macros/s/AKfycbzkbr5s94Qu9Bv5FKMI1VecnMcxiB8gnRcbOnGfbCQD6bG8C8V3iawMyHT_-Ijkkokf/exec"
+
+// redirect otomatis jika sudah login
+if(localStorage.getItem("rider")){
+  location.href="dashboard.html";
+}
+
+function login(){
+  var id=document.getElementById("id").value.trim();
+  if(!id){ alert("Masukkan ID Rider!"); return; }
+
+  fetch(API+"?action=login&id="+id)
+    .then(r=>r.json())
+    .then(d=>{
+      if(d.status){
+        localStorage.setItem("rider",id);
+        localStorage.setItem("nama",d.nama);
+        location.href="dashboard.html";
+      } else {
+        alert("ID tidak ditemukan");
+      }
+    })
+    .catch(err=>{
+      alert("Error koneksi, coba lagi");
+    });
+}
+</script>
+
+</body>
+</html>
