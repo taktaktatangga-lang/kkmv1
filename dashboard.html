@@ -1,17 +1,73 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Dashboard Rider</title>
+
 <style>
-body { font-family: Arial; background:#f4f4f4; padding:15px; margin:0;}
-.card { background:white; padding:15px; border-radius:10px; margin-bottom:15px; }
-button { padding:12px; width:100%; background:#6B0F1A; color:white; border:none; cursor:pointer; margin-top:5px;}
-table { width:100%; border-collapse: collapse; }
-td, th { padding:8px; border:1px solid #ccc; }
-td.keterangan{ width:30%; } td.nilai, td.jenis{ width:35%; }
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+padding:10px;
+margin:0;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+button{
+padding:12px;
+width:100%;
+background:#6B0F1A;
+color:white;
+border:none;
+margin-top:8px;
+border-radius:6px;
+font-weight:bold;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+table-layout:fixed;
+}
+
+input,select{
+width:100%;
+padding:6px;
+}
+
+th,td{
+padding:4px;
+text-align:left;
+}
+
+th{
+background:#D4AF37;
+color:#6B0F1A;
+}
+
+/* hilangkan spinner angka */
+
+input[type=number]::-webkit-inner-spin-button,
+input[type=number]::-webkit-outer-spin-button{
+-webkit-appearance:none;
+margin:0;
+}
+
+input[type=number]{
+-moz-appearance:textfield;
+}
+
 </style>
+
 </head>
+
 <body>
 
 <div class="card">
@@ -21,83 +77,252 @@ Saldo
 </div>
 
 <div class="card">
-<h4>Transaksi</h4>
+Transaksi Hari Ini<br>
+Online : <b id="online">0</b><br>
+Offline : <b id="offline">0</b>
+</div>
+
+<div class="card">
+Rank Bulan Ini<br>
+Online : <span id="rankOnline"></span><br>
+Offline : <span id="rankOffline"></span>
+</div>
+
+
+<!-- CARD INPUT ORDER -->
+
+<div class="card">
+
+<h3>Input Order</h3>
+
 <table id="tabel">
-<tr><th>Nilai</th><th>Jenis</th><th>Keterangan</th></tr>
+
 <tr>
-<td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-<td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
-<td class="keterangan"><input placeholder="Keterangan"></td>
+<th style="width:30%">ORDER</th>
+<th style="width:30%">TIPE ORDER</th>
+<th style="width:40%">KETERANGAN</th>
 </tr>
+
+<tr>
+
+<td>
+<input type="number" inputmode="numeric" oninput="autoTambah(this)">
+</td>
+
+<td>
+<select>
+<option value="online">online</option>
+<option value="offline">offline</option>
+</select>
+</td>
+
+<td>
+<input placeholder="keterangan">
+</td>
+
+</tr>
+
 </table>
-</div>
 
-<div class="card">
-<h4>Top Up Saldo Deposit</h4>
-Nilai TOP UP:<br><input type="number" id="topupNilai" placeholder="Masukkan nominal Top Up"><br><br>
-Keterangan:<br><input type="text" id="topupKet" placeholder="Keterangan"><br>
-</div>
-
-<div class="card">
 <button onclick="kirim()">SIMPAN REKAPAN</button>
+
 </div>
+
+
+
+<!-- CARD TOP UP -->
+
+<div class="card">
+
+<h3>Top Up Saldo</h3>
+
+Nominal
+<input type="number" id="topupNominal" inputmode="numeric">
+
+Keterangan
+<input id="topupKet" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
+
+</div>
+
+
 
 <script>
-var API="https://script.google.com/macros/s/AKfycbw_IxZ0HdQgdTXlcZ8JphMSKcEc-WUXJkLjNSX9pnr_g0LoZ41z6AycK2ZHVknbyvDf/exec"; // ganti URL Web App
-var rider=localStorage.getItem("rider");
-if(!rider){ location.href="login.html"; }
 
-document.getElementById("nama").innerText="Rider "+localStorage.getItem("nama");
+var API="https://script.google.com/macros/s/AKfycbwy6PLb0T6q_CyzSZBTiBQnrIoJ-IYZv0LEvFKk3tZi5bOXoAr7bWH2jeut0DJ08bZn/exec"
+
+var rider=localStorage.getItem("rider")
+
+if(!rider){
+location.href="login.html"
+}
+
+document.getElementById("nama").innerHTML="Rider "+localStorage.getItem("nama")
 
 function loadDashboard(){
-  fetch(API+"?action=dashboard&id="+rider)
-  .then(res=>res.json())
-  .then(d=>{
-    document.getElementById("saldo").innerText="Rp "+Number(d.saldo).toLocaleString("id-ID");
-  });
+
+fetch(API+"?action=dashboard&id="+rider)
+
+.then(r=>r.json())
+
+.then(d=>{
+
+var saldo=Number(d.saldo)||0
+
+document.getElementById("saldo").innerHTML="Rp "+saldo.toLocaleString("id-ID")
+
+document.getElementById("online").innerHTML=d.online_today
+
+document.getElementById("offline").innerHTML=d.offline_today
+
+document.getElementById("rankOnline").innerHTML="#"+d.rank_online
+
+document.getElementById("rankOffline").innerHTML="#"+d.rank_offline
+
+})
+
 }
+
 
 function autoTambah(input){
-  var row=input.parentNode.parentNode;
-  var tabel=document.getElementById("tabel");
-  if(row.rowIndex==tabel.rows.length-1 && input.value!==""){
-    var r=tabel.insertRow();
-    r.innerHTML=`<td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-<td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
-<td class="keterangan"><input placeholder="Keterangan"></td>`;
-  }
+
+var row=input.parentNode.parentNode
+
+var tabel=document.getElementById("tabel")
+
+if(row.rowIndex==tabel.rows.length-1 && input.value!=""){
+
+var r=tabel.insertRow()
+
+r.innerHTML=`
+
+<td><input type="number" inputmode="numeric" oninput="autoTambah(this)"></td>
+
+<td>
+<select>
+<option value="online">online</option>
+<option value="offline">offline</option>
+</select>
+</td>
+
+<td>
+<input placeholder="keterangan">
+</td>
+
+`
+
 }
+
+}
+
 
 function kirim(){
-  var tabel=document.getElementById("tabel");
-  var data=[];
-  for(var i=1;i<tabel.rows.length;i++){
-    var nilai=tabel.rows[i].cells[0].children[0].value;
-    var jenis=tabel.rows[i].cells[1].children[0].value;
-    var ket=tabel.rows[i].cells[2].children[0].value;
-    if(nilai!==""){ data.push({nilai:Number(nilai), jenis:jenis, ket:ket}); }
-  }
-  var topup=Number(document.getElementById("topupNilai").value);
-  var ketTopup=document.getElementById("topupKet").value.trim();
-  if(topup>0 && ketTopup!==""){ data.push({nilai:topup, jenis:"topup", ket:ketTopup}); }
-  if(data.length===0){ alert("Tidak ada transaksi atau Top Up"); return; }
 
-  fetch(API,{method:"POST", body:JSON.stringify({action:"transaksi_batch", id:rider, data:data})})
-  .then(res=>res.json())
-  .then(r=>{
-    alert("Rekapan tersimpan!");
-    loadDashboard();
-    tabel.innerHTML=`<tr><th>Nilai</th><th>Jenis</th><th>Keterangan</th></tr>
-<tr><td class="nilai"><input type="number" oninput="autoTambah(this)"></td>
-<td class="jenis"><select><option value="online">online</option><option value="offline">offline</option></select></td>
-<td class="keterangan"><input placeholder="Keterangan"></td></tr>`;
-    document.getElementById("topupNilai").value="";
-    document.getElementById("topupKet").value="";
-  }).catch(e=>alert("Gagal simpan rekapan"));
+var tabel=document.getElementById("tabel")
+
+var dataOrder=[]
+
+for(var i=1;i<tabel.rows.length;i++){
+
+var nilai=tabel.rows[i].cells[0].children[0].value
+var jenis=tabel.rows[i].cells[1].children[0].value
+var ket=tabel.rows[i].cells[2].children[0].value.trim()
+
+if(nilai!="" && Number(nilai)>0){
+
+dataOrder.push({
+nilai:Number(nilai),
+jenis:jenis,
+ket:ket
+})
+
 }
 
-loadDashboard();
-setInterval(loadDashboard,5000);
+}
+
+
+var topupNominal=document.getElementById("topupNominal").value
+var topupKet=document.getElementById("topupKet").value
+
+
+if(dataOrder.length==0 && topupNominal==""){
+alert("Tidak ada data")
+return
+}
+
+
+/* kirim order */
+
+if(dataOrder.length>0){
+
+fetch(API,{
+method:"POST",
+body:JSON.stringify({
+action:"transaksi_batch",
+id:rider,
+data:dataOrder
+})
+})
+
+}
+
+
+/* kirim topup */
+
+if(topupNominal!=""){
+
+fetch(API,{
+method:"POST",
+body:JSON.stringify({
+action:"topup",
+id:rider,
+nominal:Number(topupNominal),
+ket:topupKet
+})
+})
+
+}
+
+
+alert("Rekapan tersimpan")
+
+loadDashboard()
+
+
+/* reset form */
+
+document.getElementById("topupNominal").value=""
+document.getElementById("topupKet").value=""
+
+var tabel=document.getElementById("tabel")
+
+tabel.innerHTML=tabel.rows[0].outerHTML+`
+
+<tr>
+
+<td><input type="number" inputmode="numeric" oninput="autoTambah(this)"></td>
+
+<td>
+<select>
+<option value="online">online</option>
+<option value="offline">offline</option>
+</select>
+</td>
+
+<td>
+<input placeholder="keterangan">
+</td>
+
+</tr>
+
+`
+
+}
+
+
+loadDashboard()
+
+setInterval(loadDashboard,2000)
+
 </script>
 
 </body>

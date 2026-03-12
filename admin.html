@@ -1,98 +1,69 @@
 <!DOCTYPE html>
 <html>
 <head>
-
 <meta name="viewport" content="width=device-width, initial-scale=1">
-
 <title>Dashboard Admin</title>
-
 <style>
-
-body{
-font-family:Arial;
-padding:20px;
-background:#f4f4f4;
-}
-
-.card{
-background:white;
-padding:20px;
-margin-bottom:15px;
-border-radius:10px;
-}
-
+body{font-family:Arial;background:#f4f4f4;padding:10px;margin:0;}
+.card{background:white;padding:15px;border-radius:10px;margin-bottom:10px;}
+h2,h3{margin:5px 0;}
+table{width:100%;border-collapse:collapse;}
+th,td{padding:6px;text-align:left;}
+th{background:#D4AF37;color:#6B0F1A;}
 </style>
-
 </head>
-
 <body>
 
-<h2>Dashboard Admin</h2>
-
 <div class="card">
-
-Total Transaksi Hari Ini
-
-<h1 id="total"></h1>
-
+<h2>Admin Dashboard</h2>
+<h3>Total transaksi hari ini: <span id="totalToday">0</span></h3>
 </div>
 
 <div class="card">
-
-<h3>Top 10 Online</h3>
-
-<div id="online"></div>
-
+<h3>10 Besar Ranking Online</h3>
+<table id="topOnline">
+<tr><th>Rider</th><th>Jumlah</th></tr>
+</table>
 </div>
 
 <div class="card">
-
-<h3>Top 10 Offline</h3>
-
-<div id="offline"></div>
-
+<h3>10 Besar Ranking Offline</h3>
+<table id="topOffline">
+<tr><th>Rider</th><th>Jumlah</th></tr>
+</table>
 </div>
 
 <script>
+var API="https://script.google.com/macros/s/AKfycbwy6PLb0T6q_CyzSZBTiBQnrIoJ-IYZv0LEvFKk3tZi5bOXoAr7bWH2jeut0DJ08bZn/exec";
 
-var API="https://script.google.com/macros/s/AKfycbw_IxZ0HdQgdTXlcZ8JphMSKcEc-WUXJkLjNSX9pnr_g0LoZ41z6AycK2ZHVknbyvDf/exec"
+function loadAdmin(){
+  fetch(API+"?action=admin")
+    .then(r=>r.json())
+    .then(d=>{
+      document.getElementById("totalToday").innerHTML=d.total_today;
 
-function load(){
+      var tOnline=document.getElementById("topOnline");
+      tOnline.innerHTML='<tr><th>Rider</th><th>Jumlah</th></tr>';
+      d.top_online.forEach(function(r){
+        var row=tOnline.insertRow();
+        row.insertCell(0).innerHTML=r.id;
+        row.insertCell(1).innerHTML=r.total;
+      });
 
-fetch(API+"?action=admin")
-
-.then(r=>r.json())
-
-.then(d=>{
-
-document.getElementById("total").innerHTML=d.total_today
-
-var o=""
-d.top_online.forEach((x,i)=>{
-o+=(i+1)+". "+x.id+" ("+x.total+")<br>"
-})
-
-document.getElementById("online").innerHTML=o
-
-
-var f=""
-d.top_offline.forEach((x,i)=>{
-f+=(i+1)+". "+x.id+" ("+x.total+")<br>"
-})
-
-document.getElementById("offline").innerHTML=f
-
-})
-
+      var tOffline=document.getElementById("topOffline");
+      tOffline.innerHTML='<tr><th>Rider</th><th>Jumlah</th></tr>';
+      d.top_offline.forEach(function(r){
+        var row=tOffline.insertRow();
+        row.insertCell(0).innerHTML=r.id;
+        row.insertCell(1).innerHTML=r.total;
+      });
+    });
 }
 
-load()
-
-setInterval(load,5000)
+// load setiap 2 detik
+loadAdmin();
+setInterval(loadAdmin,2000);
 
 </script>
-
 </body>
-
 </html>
-
