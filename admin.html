@@ -1,69 +1,266 @@
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
+
 <title>Dashboard Admin</title>
+
 <style>
-body{font-family:Arial;background:#f4f4f4;padding:10px;margin:0;}
-.card{background:white;padding:15px;border-radius:10px;margin-bottom:10px;}
-h2,h3{margin:5px 0;}
-table{width:100%;border-collapse:collapse;}
-th,td{padding:6px;text-align:left;}
-th{background:#D4AF37;color:#6B0F1A;}
+
+body{
+font-family:Arial;
+background:#f4f4f4;
+margin:0;
+padding:10px;
+}
+
+.card{
+background:white;
+padding:15px;
+border-radius:10px;
+margin-bottom:10px;
+}
+
+h2,h3{
+margin:5px 0;
+}
+
+table{
+width:100%;
+border-collapse:collapse;
+}
+
+th,td{
+padding:6px;
+text-align:left;
+}
+
+th{
+background:#D4AF37;
+color:#6B0F1A;
+}
+
+.stat{
+font-size:20px;
+font-weight:bold;
+}
+
 </style>
+
 </head>
+
 <body>
 
 <div class="card">
-<h2>Admin Dashboard</h2>
-<h3>Total transaksi hari ini: <span id="totalToday">0</span></h3>
+<h2>Dashboard Admin</h2>
 </div>
 
 <div class="card">
-<h3>10 Besar Ranking Online</h3>
+
+<h3>Statistik Hari Ini</h3>
+
+Total Transaksi :
+<div class="stat" id="today_transaksi">0</div>
+
+Order Online :
+<div class="stat" id="today_online">0</div>
+
+Order Offline :
+<div class="stat" id="today_offline">0</div>
+
+Top Up :
+<div class="stat" id="today_topup">0</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>Statistik Bulan Ini</h3>
+
+Total Order :
+<div class="stat" id="month_order">0</div>
+
+Omzet :
+<div class="stat" id="month_omzet">0</div>
+
+Total Top Up :
+<div class="stat" id="month_topup">0</div>
+
+</div>
+
+
+<div class="card">
+
+<h3>Rider Aktif Hari Ini</h3>
+
+<div class="stat" id="rider_active">0 Rider</div>
+
+</div>
+
+
+
+<div class="card">
+
+<h3>Top 10 Rider Online</h3>
+
 <table id="topOnline">
-<tr><th>Rider</th><th>Jumlah</th></tr>
+
+<tr>
+<th>Rank</th>
+<th>Rider</th>
+<th>Order</th>
+</tr>
+
 </table>
+
 </div>
 
+
+
 <div class="card">
-<h3>10 Besar Ranking Offline</h3>
+
+<h3>Top 10 Rider Offline</h3>
+
 <table id="topOffline">
-<tr><th>Rider</th><th>Jumlah</th></tr>
+
+<tr>
+<th>Rank</th>
+<th>Rider</th>
+<th>Order</th>
+</tr>
+
 </table>
+
 </div>
+
+
+
+<div class="card">
+
+<h3>Rider Saldo Minus</h3>
+
+<table id="saldoMinus">
+
+<tr>
+<th>Rider</th>
+<th>Saldo</th>
+</tr>
+
+</table>
+
+</div>
+
+
 
 <script>
-var API="https://script.google.com/macros/s/AKfycbwy6PLb0T6q_CyzSZBTiBQnrIoJ-IYZv0LEvFKk3tZi5bOXoAr7bWH2jeut0DJ08bZn/exec";
+
+var API="https://script.google.com/macros/s/AKfycbwy6PLb0T6q_CyzSZBTiBQnrIoJ-IYZv0LEvFKk3tZi5bOXoAr7bWH2jeut0DJ08bZn/exec"
 
 function loadAdmin(){
-  fetch(API+"?action=admin")
-    .then(r=>r.json())
-    .then(d=>{
-      document.getElementById("totalToday").innerHTML=d.total_today;
 
-      var tOnline=document.getElementById("topOnline");
-      tOnline.innerHTML='<tr><th>Rider</th><th>Jumlah</th></tr>';
-      d.top_online.forEach(function(r){
-        var row=tOnline.insertRow();
-        row.insertCell(0).innerHTML=r.id;
-        row.insertCell(1).innerHTML=r.total;
-      });
+fetch(API+"?action=admin")
 
-      var tOffline=document.getElementById("topOffline");
-      tOffline.innerHTML='<tr><th>Rider</th><th>Jumlah</th></tr>';
-      d.top_offline.forEach(function(r){
-        var row=tOffline.insertRow();
-        row.insertCell(0).innerHTML=r.id;
-        row.insertCell(1).innerHTML=r.total;
-      });
-    });
+.then(r=>r.json())
+
+.then(d=>{
+
+
+document.getElementById("today_transaksi").innerHTML=d.today_transaksi
+
+document.getElementById("today_online").innerHTML=d.today_online
+
+document.getElementById("today_offline").innerHTML=d.today_offline
+
+document.getElementById("today_topup").innerHTML=d.today_topup
+
+
+document.getElementById("month_order").innerHTML=d.month_order
+
+document.getElementById("month_omzet").innerHTML="Rp "+Number(d.month_omzet).toLocaleString("id-ID")
+
+document.getElementById("month_topup").innerHTML=d.month_topup
+
+
+document.getElementById("rider_active").innerHTML=d.rider_active+" Rider"
+
+
+
+/* TOP ONLINE */
+
+var tOnline=document.getElementById("topOnline")
+
+tOnline.innerHTML=`<tr>
+<th>Rank</th>
+<th>Rider</th>
+<th>Order</th>
+</tr>`
+
+d.top_online.forEach(function(r,i){
+
+var row=tOnline.insertRow()
+
+row.insertCell(0).innerHTML=i+1
+
+row.insertCell(1).innerHTML=r.nama
+
+row.insertCell(2).innerHTML=r.total
+
+})
+
+
+/* TOP OFFLINE */
+
+var tOffline=document.getElementById("topOffline")
+
+tOffline.innerHTML=`<tr>
+<th>Rank</th>
+<th>Rider</th>
+<th>Order</th>
+</tr>`
+
+d.top_offline.forEach(function(r,i){
+
+var row=tOffline.insertRow()
+
+row.insertCell(0).innerHTML=i+1
+
+row.insertCell(1).innerHTML=r.nama
+
+row.insertCell(2).innerHTML=r.total
+
+})
+
+
+/* SALDO MINUS */
+
+var tMinus=document.getElementById("saldoMinus")
+
+tMinus.innerHTML=`<tr>
+<th>Rider</th>
+<th>Saldo</th>
+</tr>`
+
+d.saldo_minus.forEach(function(r){
+
+var row=tMinus.insertRow()
+
+row.insertCell(0).innerHTML=r.nama
+
+row.insertCell(1).innerHTML="Rp "+Number(r.saldo).toLocaleString("id-ID")
+
+})
+
+})
+
 }
 
-// load setiap 2 detik
-loadAdmin();
-setInterval(loadAdmin,2000);
+loadAdmin()
+
+setInterval(loadAdmin,2000)
 
 </script>
+
 </body>
 </html>
