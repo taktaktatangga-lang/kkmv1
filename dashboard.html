@@ -139,7 +139,7 @@ Rank offline : <b id="rank_offline"></b>
 
 const API="https://script.google.com/macros/s/AKfycbzjGr1tPkJCGOsu0ioJ2REXjxS8lPkpErKXGHRCraF9_6AqUsZyT-TLb8ukeECKsq6N/exec"
 
-var nama=localStorage.nama||""
+var nama = localStorage.getItem("nama")
 
 document.getElementById("nama").innerHTML=nama
 
