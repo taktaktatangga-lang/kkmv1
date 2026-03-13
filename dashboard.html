@@ -60,13 +60,39 @@ Saldo
 
 <div class="card">
 
-Online Hari Ini
-<b id="online"></b>
+<div style="display:flex;justify-content:space-between">
+
+<div>
+
+online hari ini : <b id="online">0</b>
+
+</div>
+
+<div>
+
+Rank online : <b id="rankOnline">-</b>
+
+</div>
+
+</div>
 
 <br>
 
-Offline Hari Ini
-<b id="offline"></b>
+<div style="display:flex;justify-content:space-between">
+
+<div>
+
+offline hari ini : <b id="offline">0</b>
+
+</div>
+
+<div>
+
+Rank offline : <b id="rankOffline">-</b>
+
+</div>
+
+</div>
 
 </div>
 
@@ -148,9 +174,13 @@ fetch(API+"?action=dashboard&id="+rider)
 
 document.getElementById("saldo").innerHTML="Rp "+Number(d.saldo).toLocaleString("id-ID")
 
-document.getElementById("online").innerHTML=d.online_today
+document.getElementById("online").innerHTML=d.online_today || 0
 
-document.getElementById("offline").innerHTML=d.offline_today
+document.getElementById("offline").innerHTML=d.offline_today || 0
+
+document.getElementById("rankOnline").innerHTML="#"+(d.rank_online||"-")
+
+document.getElementById("rankOffline").innerHTML="#"+(d.rank_offline||"-")
 
 })
 
