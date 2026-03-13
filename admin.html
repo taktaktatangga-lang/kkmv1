@@ -34,6 +34,7 @@ Total transaksi hari ini
 
 </div>
 
+
 <div class="card">
 
 <h3>TOP ONLINE</h3>
@@ -41,6 +42,7 @@ Total transaksi hari ini
 <div id="online"></div>
 
 </div>
+
 
 <div class="card">
 
@@ -51,9 +53,10 @@ Total transaksi hari ini
 </div>
 
 
+
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbwltfctNlXXkMQmATIAOsSX1Hb7k-pgo1U2RQ_WdbtFUaFfatKAAjq4ud6GESM6uom8/exec"
+const API="https://script.google.com/macros/s/AKfycbx1LYxb3aPHPr_FWPYM3YFkO-dyus5i1qxJm-epzcSaHfDo4ls8I_wisiZgTSHjS8j2/exec"
 
 fetch(API+"?action=admin")
 
@@ -64,13 +67,17 @@ fetch(API+"?action=admin")
 document.getElementById("total").innerHTML=d.total_today
 
 d.top_online.forEach(x=>{
+
 document.getElementById("online").innerHTML+=
 x.nama+" : "+x.total+"<br>"
+
 })
 
 d.top_offline.forEach(x=>{
+
 document.getElementById("offline").innerHTML+=
 x.nama+" : "+x.total+"<br>"
+
 })
 
 })
