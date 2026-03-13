@@ -2,6 +2,7 @@
 <html>
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Dashboard Rider</title>
 
 <style>
@@ -21,12 +22,15 @@ border-radius:10px;
 margin-bottom:15px
 }
 
+table{
+width:100%
+}
+
 input,select{
 width:100%;
-padding:10px;
-margin-top:6px;
-margin-bottom:10px;
-font-size:16px
+padding:8px;
+margin-top:5px;
+font-size:14px
 }
 
 button{
@@ -41,8 +45,7 @@ color:white
 
 .stat{
 display:flex;
-justify-content:space-between;
-font-size:14px
+justify-content:space-between
 }
 
 </style>
@@ -73,50 +76,72 @@ Rank offline : <b id="rank_offline"></b>
 
 <h3>INPUT ORDER</h3>
 
-<label>ORDER</label>
-<input id="nilai">
+<table id="orderTable">
 
-<label>TIPE ORDER</label>
-<select id="tipe">
+<tr>
+<th>ORDER</th>
+<th>TIPE ORDER</th>
+<th>KETERANGAN</th>
+</tr>
+
+<tr>
+
+<td>
+<input class="order" oninput="autoTambahBaris()">
+</td>
+
+<td>
+<select class="tipe">
 <option value="online">online</option>
 <option value="offline">offline</option>
 </select>
+</td>
 
-<label>KETERANGAN</label>
-<input id="ket">
+<td>
+<input class="ket">
+</td>
+
+</tr>
+
+</table>
 
 </div>
+
 
 
 <div class="card">
 
 <h3>TOP UP</h3>
 
-<label>NOMINAL</label>
-<input id="topup">
+<input id="topup" placeholder="NOMINAL">
 
-<label>TF KE BCA/DANA/OVO/GOPAY/CASH DI</label>
-<input id="ket_topup">
+<input id="ket_topup" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
 
 </div>
+
 
 
 <button onclick="simpan()">SIMPAN REKAPAN</button>
 
 
+
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbwltfctNlXXkMQmATIAOsSX1Hb7k-pgo1U2RQ_WdbtFUaFfatKAAjq4ud6GESM6uom8/exec"
+const API="https://script.google.com/macros/s/AKfycbx1LYxb3aPHPr_FWPYM3YFkO-dyus5i1qxJm-epzcSaHfDo4ls8I_wisiZgTSHjS8j2/exec"
 
-var nama=localStorage.nama
+var nama=localStorage.nama||"-"
 var saldo=Number(localStorage.saldo)||0
 
 document.getElementById("nama").innerHTML=nama
 
 document.getElementById("saldo").innerHTML=
-"Saldo : Rp "+saldo.toLocaleString("id-ID")
+"Rp "+saldo.toLocaleString("id-ID")
+
+
 
 loadDashboard()
+
+
 
 function loadDashboard(){
 
@@ -138,17 +163,72 @@ document.getElementById("rank_offline").innerHTML="#"+d.rank_offline
 
 
 
-function simpan(){
+function autoTambahBaris(){
 
-var nilai=Number(document.getElementById("nilai").value)||0
+var table=document.getElementById("orderTable")
 
-if(nilai>0 && nilai<8000){
+var rows=table.querySelectorAll("tr")
 
-alert("minimal order 8000")
+var lastRow=rows[rows.length-1]
 
-return
+var input=lastRow.querySelector(".order")
+
+if(input.value!=""){
+
+var row=table.insertRow()
+
+row.innerHTML=`
+
+<td>
+<input class="order" oninput="autoTambahBaris()">
+</td>
+
+<td>
+<select class="tipe">
+<option value="online">online</option>
+<option value="offline">offline</option>
+</select>
+</td>
+
+<td>
+<input class="ket">
+</td>
+
+`
 
 }
+
+}
+
+
+
+function simpan(){
+
+var orders=[]
+
+var nilai=document.querySelectorAll(".order")
+var tipe=document.querySelectorAll(".tipe")
+var ket=document.querySelectorAll(".ket")
+
+for(var i=0;i<nilai.length;i++){
+
+var n=Number(nilai[i].value)||0
+
+if(n>=8000){
+
+orders.push({
+
+nilai:n,
+tipe:tipe[i].value,
+ket:ket[i].value
+
+})
+
+}
+
+}
+
+
 
 var data={
 
@@ -156,13 +236,7 @@ action:"simpan_rekapan",
 
 nama:nama,
 
-orders:[{
-
-nilai:nilai,
-tipe:document.getElementById("tipe").value,
-ket:document.getElementById("ket").value
-
-}],
+orders:orders,
 
 topup:Number(document.getElementById("topup").value)||0,
 
@@ -170,9 +244,14 @@ ket_topup:document.getElementById("ket_topup").value
 
 }
 
+
+
 fetch(API,{
+
 method:"POST",
+
 body:JSON.stringify(data)
+
 })
 
 .then(r=>r.json())
@@ -182,7 +261,7 @@ body:JSON.stringify(data)
 localStorage.saldo=d.saldo
 
 document.getElementById("saldo").innerHTML=
-"Saldo : Rp "+Number(d.saldo).toLocaleString("id-ID")
+"Rp "+Number(d.saldo).toLocaleString("id-ID")
 
 loadDashboard()
 
