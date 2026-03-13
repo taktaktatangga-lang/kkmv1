@@ -196,14 +196,21 @@ var ket=t.rows[i].cells[2].children[0].value
 
 if(nominal!=""){
 
-transaksi.push({
-nominal:Number(nominal),
-tipe:tipe,
-keterangan:ket
-})
+nominal = Number(nominal)
+
+if(nominal < 8000){
+
+alert("Minimal order 8000")
+return
 
 }
 
+if(nominal % 1000 != 0){
+
+alert("Nilai order harus ribuan")
+return
+
+}
 }
 
 
