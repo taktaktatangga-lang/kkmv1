@@ -1,117 +1,80 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
-<title>Admin Dashboard</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#f2f2f2;
-padding:10px
+background:#111;
+color:white;
+padding:20px
 }
 
 .card{
-background:white;
+background:#222;
 padding:20px;
 border-radius:10px;
-margin-bottom:10px
-}
-
-.stat{
-font-size:22px;
-font-weight:bold
+margin-bottom:20px
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div class="card">
-
-<h2>Dashboard Admin</h2>
-
-</div>
-
-
+<h2>ADMIN DASHBOARD</h2>
 
 <div class="card">
 
-Total Transaksi Hari Ini
-
-<div class="stat" id="trx">0</div>
+Total transaksi hari ini :
+<h1 id="total"></h1>
 
 </div>
-
-
 
 <div class="card">
 
-Order Online
+<h3>TOP ONLINE</h3>
 
-<div class="stat" id="online">0</div>
+<div id="online"></div>
 
 </div>
-
-
 
 <div class="card">
 
-Order Offline
+<h3>TOP OFFLINE</h3>
 
-<div class="stat" id="offline">0</div>
-
-</div>
-
-
-
-<div class="card">
-
-Top Up Saldo
-
-<div class="stat" id="topup">0</div>
+<div id="offline"></div>
 
 </div>
-
 
 
 <script>
 
-var API="https://script.google.com/macros/s/AKfycbyt8kms9gDv4mI9-_GmHjVfcbWwPTcw86K7f2_oqvy5unDzRlWMbhpQh1XNF9NOLG4V/exec"
-
-
-
-function load(){
+const API="https://script.google.com/macros/s/AKfycbw8j_0okewUOZmrH2LKxQ58FaiclT2PvWtR0UjSGEEWfiY69iHZslCU15gRb-2alQa5/exec"
 
 fetch(API+"?action=admin")
-
 .then(r=>r.json())
-
 .then(d=>{
 
-document.getElementById("trx").innerHTML=d.transaksi||0
+document.getElementById("total").innerHTML=d.total_today
 
-document.getElementById("online").innerHTML=d.online||0
+d.top_online.forEach(r=>{
 
-document.getElementById("offline").innerHTML=d.offline||0
-
-document.getElementById("topup").innerHTML=d.topup||0
+document.getElementById("online").innerHTML+=
+r.nama+" : "+r.total+"<br>"
 
 })
 
-}
+d.top_offline.forEach(r=>{
 
+document.getElementById("offline").innerHTML+=
+r.nama+" : "+r.total+"<br>"
 
+})
 
-load()
-
-setInterval(load,5000)
+})
 
 </script>
 
