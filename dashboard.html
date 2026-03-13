@@ -30,7 +30,8 @@ border-collapse:collapse
 
 input,select{
 width:100%;
-padding:8px
+padding:8px;
+box-sizing:border-box
 }
 
 button{
@@ -38,7 +39,8 @@ width:100%;
 padding:12px;
 background:#6B0F1A;
 color:white;
-border:none
+border:none;
+border-radius:6px
 }
 
 </style>
@@ -101,7 +103,9 @@ Offline Hari Ini
 
 </table>
 
-<button onclick="tambah()">Tambah</button>
+<br>
+
+<button onclick="tambah()">Tambah Baris</button>
 
 </div>
 
@@ -125,7 +129,7 @@ Offline Hari Ini
 
 <script>
 
-var API="https://script.google.com/macros/s/AKfycbxVQWElE8xkIzHleAsT1s4ecXPDQ6gGpn39mzoKFkdsrBhjs7AnEJYAYZMGu4vsuKWy/exec"
+var API="PASTE_API_URL"
 
 var rider=localStorage.getItem("rider")
 
@@ -141,11 +145,13 @@ fetch(API+"?action=dashboard&id="+rider)
 
 .then(d=>{
 
-document.getElementById("saldo").innerHTML="Rp "+Number(d.saldo).toLocaleString("id-ID")
+var saldo = Number(d.saldo) || 0
 
-document.getElementById("online").innerHTML=d.online_today
+document.getElementById("saldo").innerHTML="Rp "+saldo.toLocaleString("id-ID")
 
-document.getElementById("offline").innerHTML=d.offline_today
+document.getElementById("online").innerHTML=d.online_today || 0
+
+document.getElementById("offline").innerHTML=d.offline_today || 0
 
 })
 
@@ -194,23 +200,44 @@ var nominal=t.rows[i].cells[0].children[0].value
 var tipe=t.rows[i].cells[1].children[0].value
 var ket=t.rows[i].cells[2].children[0].value
 
+
+
 if(nominal!=""){
 
-nominal = Number(nominal)
+nominal=Number(nominal)
 
-if(nominal < 8000){
+
+
+if(nominal<8000){
 
 alert("Minimal order 8000")
+
 return
 
 }
 
-if(nominal % 1000 != 0){
+
+
+if(nominal%1000!=0){
 
 alert("Nilai order harus ribuan")
+
 return
 
 }
+
+
+
+transaksi.push({
+
+nominal:nominal,
+tipe:tipe,
+keterangan:ket
+
+})
+
+}
+
 }
 
 
@@ -227,8 +254,11 @@ method:"POST",
 body:JSON.stringify({
 
 action:"simpan_rekapan",
+
 id:rider,
+
 transaksi:transaksi,
+
 topup:{
 nominal:Number(topupNominal)||0,
 keterangan:topupKet
@@ -259,4 +289,5 @@ setInterval(load,3000)
 </script>
 
 </body>
+
 </html>
