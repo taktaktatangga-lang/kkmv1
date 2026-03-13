@@ -24,7 +24,7 @@ margin-bottom:15px
 input,select{
 width:100%;
 padding:10px;
-margin-top:5px;
+margin-top:6px;
 margin-bottom:10px;
 font-size:16px
 }
@@ -42,6 +42,7 @@ color:white
 .stat{
 display:flex;
 justify-content:space-between;
+font-size:14px
 }
 
 </style>
@@ -50,18 +51,21 @@ justify-content:space-between;
 <body>
 
 <h3 id="nama"></h3>
+
 <h2 id="saldo"></h2>
 
 <div class="card stat">
+
 <div>
-Online hari ini : <b id="online"></b><br>
-Offline hari ini : <b id="offline"></b>
+online hari ini : <b id="online"></b><br>
+offline hari ini : <b id="offline"></b>
 </div>
 
 <div style="text-align:right">
-Rank online : <b id="ronline"></b><br>
-Rank offline : <b id="roffline"></b>
+Rank online : <b id="rank_online"></b><br>
+Rank offline : <b id="rank_offline"></b>
 </div>
+
 </div>
 
 
@@ -69,14 +73,17 @@ Rank offline : <b id="roffline"></b>
 
 <h3>INPUT ORDER</h3>
 
-<input id="order1" placeholder="ORDER">
+<label>ORDER</label>
+<input id="nilai">
 
-<select id="tipe1">
-<option value="online">ONLINE</option>
-<option value="offline">OFFLINE</option>
+<label>TIPE ORDER</label>
+<select id="tipe">
+<option value="online">online</option>
+<option value="offline">offline</option>
 </select>
 
-<input id="ket1" placeholder="KETERANGAN">
+<label>KETERANGAN</label>
+<input id="ket">
 
 </div>
 
@@ -85,48 +92,59 @@ Rank offline : <b id="roffline"></b>
 
 <h3>TOP UP</h3>
 
-<input id="topup" placeholder="NOMINAL">
+<label>NOMINAL</label>
+<input id="topup">
 
-<input id="ket_topup" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
+<label>TF KE BCA/DANA/OVO/GOPAY/CASH DI</label>
+<input id="ket_topup">
 
 </div>
+
 
 <button onclick="simpan()">SIMPAN REKAPAN</button>
 
 
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbw8j_0okewUOZmrH2LKxQ58FaiclT2PvWtR0UjSGEEWfiY69iHZslCU15gRb-2alQa5/exec"
+const API="https://script.google.com/macros/s/AKfycbwltfctNlXXkMQmATIAOsSX1Hb7k-pgo1U2RQ_WdbtFUaFfatKAAjq4ud6GESM6uom8/exec"
 
 var nama=localStorage.nama
+var saldo=Number(localStorage.saldo)||0
 
 document.getElementById("nama").innerHTML=nama
+
+document.getElementById("saldo").innerHTML=
+"Saldo : Rp "+saldo.toLocaleString("id-ID")
 
 loadDashboard()
 
 function loadDashboard(){
 
 fetch(API+"?action=dashboard&nama="+nama)
+
 .then(r=>r.json())
+
 .then(d=>{
 
 document.getElementById("online").innerHTML=d.online_today
 document.getElementById("offline").innerHTML=d.offline_today
-document.getElementById("ronline").innerHTML=d.rank_online
-document.getElementById("roffline").innerHTML=d.rank_offline
+
+document.getElementById("rank_online").innerHTML="#"+d.rank_online
+document.getElementById("rank_offline").innerHTML="#"+d.rank_offline
 
 })
 
 }
 
 
+
 function simpan(){
 
-var order = Number(document.getElementById("order1").value)||0
+var nilai=Number(document.getElementById("nilai").value)||0
 
-if(order>0 && order<8000){
+if(nilai>0 && nilai<8000){
 
-alert("Minimal order 8000")
+alert("minimal order 8000")
 
 return
 
@@ -135,17 +153,19 @@ return
 var data={
 
 action:"simpan_rekapan",
+
 nama:nama,
 
-orders:[
-{
-nilai:order,
-tipe:document.getElementById("tipe1").value,
-ket:document.getElementById("ket1").value
-}
-],
+orders:[{
+
+nilai:nilai,
+tipe:document.getElementById("tipe").value,
+ket:document.getElementById("ket").value
+
+}],
 
 topup:Number(document.getElementById("topup").value)||0,
+
 ket_topup:document.getElementById("ket_topup").value
 
 }
@@ -154,10 +174,15 @@ fetch(API,{
 method:"POST",
 body:JSON.stringify(data)
 })
+
 .then(r=>r.json())
+
 .then(d=>{
 
-document.getElementById("saldo").innerHTML="Saldo : Rp "+d.saldo
+localStorage.saldo=d.saldo
+
+document.getElementById("saldo").innerHTML=
+"Saldo : Rp "+Number(d.saldo).toLocaleString("id-ID")
 
 loadDashboard()
 
