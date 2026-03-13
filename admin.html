@@ -7,13 +7,13 @@
 
 body{
 font-family:Arial;
-background:#111;
+background:#0f172a;
 color:white;
 padding:20px
 }
 
 .card{
-background:#222;
+background:#1e293b;
 padding:20px;
 border-radius:10px;
 margin-bottom:20px
@@ -28,7 +28,8 @@ margin-bottom:20px
 
 <div class="card">
 
-Total transaksi hari ini :
+Total transaksi hari ini
+
 <h1 id="total"></h1>
 
 </div>
@@ -52,26 +53,24 @@ Total transaksi hari ini :
 
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbw8j_0okewUOZmrH2LKxQ58FaiclT2PvWtR0UjSGEEWfiY69iHZslCU15gRb-2alQa5/exec"
+const API="https://script.google.com/macros/s/AKfycbwltfctNlXXkMQmATIAOsSX1Hb7k-pgo1U2RQ_WdbtFUaFfatKAAjq4ud6GESM6uom8/exec"
 
 fetch(API+"?action=admin")
+
 .then(r=>r.json())
+
 .then(d=>{
 
 document.getElementById("total").innerHTML=d.total_today
 
-d.top_online.forEach(r=>{
-
+d.top_online.forEach(x=>{
 document.getElementById("online").innerHTML+=
-r.nama+" : "+r.total+"<br>"
-
+x.nama+" : "+x.total+"<br>"
 })
 
-d.top_offline.forEach(r=>{
-
+d.top_offline.forEach(x=>{
 document.getElementById("offline").innerHTML+=
-r.nama+" : "+r.total+"<br>"
-
+x.nama+" : "+x.total+"<br>"
 })
 
 })
