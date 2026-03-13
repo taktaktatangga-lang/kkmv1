@@ -1,77 +1,65 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
 <title>Login Rider</title>
 
 <style>
-
 body{
 font-family:Arial;
-background:#f2f2f2;
-padding:20px
-}
-
-.card{
-background:white;
-padding:20px;
-border-radius:10px
+background:#111;
+color:white;
+text-align:center;
+padding-top:100px
 }
 
 input{
-width:100%;
-padding:10px;
-margin-bottom:10px
+padding:15px;
+font-size:20px;
+width:200px;
+text-align:center
 }
 
 button{
-width:100%;
-padding:12px;
-background:#6B0F1A;
+padding:15px 40px;
+font-size:18px;
+margin-top:20px;
+background:#00b894;
 color:white;
-border:none
+border:none;
+border-radius:8px
 }
-
 </style>
-
 </head>
 
 <body>
 
-<div class="card">
+<h2>LOGIN RIDER</h2>
 
-<h3>Login Rider</h3>
+<input id="id" placeholder="USER ID">
 
-<input id="id" placeholder="Masukkan ID Rider">
+<br>
 
 <button onclick="login()">LOGIN</button>
 
-</div>
-
 <script>
 
-var API="https://script.google.com/macros/s/AKfycbyt8kms9gDv4mI9-_GmHjVfcbWwPTcw86K7f2_oqvy5unDzRlWMbhpQh1XNF9NOLG4V/exec"
+const API="https://script.google.com/macros/s/AKfycbw8j_0okewUOZmrH2LKxQ58FaiclT2PvWtR0UjSGEEWfiY69iHZslCU15gRb-2alQa5/exec"
 
 function login(){
 
 var id=document.getElementById("id").value
 
 fetch(API+"?action=login&id="+id)
-
 .then(r=>r.json())
-
 .then(d=>{
 
-if(d.status=="ok"){
+if(d.status){
 
-localStorage.setItem("rider",d.id)
+localStorage.nama=d.nama
+localStorage.saldo=d.saldo
 
-localStorage.setItem("nama",d.nama)
-
-location.href="dashboard.html"
+location="dashboard.html"
 
 }else{
 
