@@ -1,18 +1,36 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
 <title>Dashboard Rider</title>
 
 <style>
 
-body{font-family:Arial;background:#f2f2f2;margin:0;padding:10px}
+body{
+font-family:Arial;
+background:#f2f2f2;
+margin:0;
+padding:10px
+}
 
 .card{
 background:white;
 padding:15px;
 border-radius:10px;
 margin-bottom:10px
+}
+
+table{
+width:100%;
+border-collapse:collapse
+}
+
+input,select{
+width:100%;
+padding:8px
 }
 
 button{
@@ -23,16 +41,6 @@ color:white;
 border:none
 }
 
-table{
-width:100%;
-border-collapse:collapse
-}
-
-input,select{
-width:100%;
-padding:6px
-}
-
 </style>
 
 </head>
@@ -40,10 +48,15 @@ padding:6px
 <body>
 
 <div class="card">
+
 <h3 id="nama"></h3>
+
 Saldo
 <h2 id="saldo">0</h2>
+
 </div>
+
+
 
 <div class="card">
 
@@ -56,6 +69,8 @@ Offline Hari Ini
 <b id="offline">0</b>
 
 </div>
+
+
 
 <div class="card">
 
@@ -71,9 +86,7 @@ Offline Hari Ini
 
 <tr>
 
-<td>
-<input type="number" oninput="autoTambah(this)">
-</td>
+<td><input type="number"></td>
 
 <td>
 <select>
@@ -82,35 +95,43 @@ Offline Hari Ini
 </select>
 </td>
 
-<td>
-<input>
-</td>
+<td><input></td>
 
 </tr>
 
 </table>
 
-<button onclick="simpan()">SIMPAN REKAPAN</button>
+<button onclick="tambah()">Tambah Baris</button>
 
 </div>
+
+
 
 <div class="card">
 
 <h3>Top Up</h3>
 
-<input id="nominal" placeholder="Nominal">
+<input id="topupNominal" placeholder="Nominal">
 
-<input id="ket" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
+<input id="topupKet" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
 
 </div>
 
+
+
+<button onclick="simpan()">SIMPAN REKAPAN</button>
+
+
+
 <script>
 
-var API="https://script.google.com/macros/s/AKfycbw6xZMLgUiZbq8K75kLmnoZ1tfl9cWYK68YJhI_x-m9cxYn37hKyhIHMq_nyTvwQlub/exec"
+var API="https://script.google.com/macros/s/AKfycbxVQWElE8xkIzHleAsT1s4ecXPDQ6gGpn39mzoKFkdsrBhjs7AnEJYAYZMGu4vsuKWy/exec"
 
 var rider=localStorage.getItem("rider")
 
 document.getElementById("nama").innerHTML=localStorage.getItem("nama")
+
+
 
 function load(){
 
@@ -130,129 +151,99 @@ document.getElementById("offline").innerHTML=d.offline_today
 
 }
 
-function autoTambah(input){
 
-var row=input.parentNode.parentNode
-var tabel=document.getElementById("tabel")
 
-if(row.rowIndex==tabel.rows.length-1 && input.value!=""){
+function tambah(){
 
-var r=tabel.insertRow()
+var t=document.getElementById("tabel")
+
+var r=t.insertRow()
 
 r.innerHTML=`
-<td><input type="number" oninput="autoTambah(this)"></td>
+
+<td><input type="number"></td>
+
 <td>
+
 <select>
 <option value="online">online</option>
 <option value="offline">offline</option>
 </select>
+
 </td>
+
 <td><input></td>
+
 `
 
 }
 
-}
+
 
 function simpan(){
 
-var tabel=document.getElementById("tabel")
+var t=document.getElementById("tabel")
 
-var data=[]
-
-for(var i=1;i<tabel.rows.length;i++){
-
-var nilai=tabel.rows[i].cells[0].children[0].value
-var jenis=tabel.rows[i].cells[1].children[0].value
-var ket=tabel.rows[i].cells[2].children[0].value
-
-nilai = Number(nilai)
-
-if(!isNaN(nilai) && nilai>0){
-
-data.push({
-nilai:nilai,
-jenis:jenis,
-ket:ket
-})
-
-}
-
-}
-
-if(data.length==0 && document.getElementById("nominal").value==""){
-alert("Tidak ada data untuk disimpan")
-return
-}
+var transaksi=[]
 
 
 
-fetch(API,{
-method:"POST",
-body:JSON.stringify({
-action:"transaksi_batch",
-id:rider,
-data:data
-})
-})
+for(var i=1;i<t.rows.length;i++){
 
-
-
-var nominal=document.getElementById("nominal").value
-var ket=document.getElementById("ket").value
+var nominal=t.rows[i].cells[0].children[0].value
+var tipe=t.rows[i].cells[1].children[0].value
+var ket=t.rows[i].cells[2].children[0].value
 
 if(nominal!=""){
 
-fetch(API,{
-method:"POST",
-body:JSON.stringify({
-action:"topup",
-id:rider,
+transaksi.push({
 nominal:Number(nominal),
-ket:ket
+tipe:tipe,
+keterangan:ket
 })
-})
 
 }
 
-alert("Rekapan berhasil disimpan")
-
-load()
-
 }
-}
+
+
+
+var topupNominal=document.getElementById("topupNominal").value
+var topupKet=document.getElementById("topupKet").value
+
+
 
 fetch(API,{
+
 method:"POST",
+
 body:JSON.stringify({
-action:"transaksi_batch",
+
+action:"simpan_rekapan",
 id:rider,
-data:data
-})
+transaksi:transaksi,
+topup:{
+nominal:Number(topupNominal)||0,
+keterangan:topupKet
+}
+
 })
 
-var nominal=document.getElementById("nominal").value
-var ket=document.getElementById("ket").value
-
-if(nominal!=""){
-
-fetch(API,{
-method:"POST",
-body:JSON.stringify({
-action:"topup",
-id:rider,
-nominal:Number(nominal),
-ket:ket
 })
+
+.then(r=>r.json())
+
+.then(d=>{
+
+alert("Rekapan tersimpan")
+
+location.reload()
+
 })
 
 }
 
-alert("Tersimpan")
 
-load()
-
-}
 
 load()
 
