@@ -1,14 +1,19 @@
 <!DOCTYPE html>
 <html>
+
 <head>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 
 <title>Admin</title>
 
 <style>
 
-body{font-family:Arial;background:#f2f2f2;padding:10px}
+body{
+font-family:Arial;
+background:#f2f2f2;
+padding:10px
+}
 
 .card{
 background:white;
@@ -27,25 +32,29 @@ margin-bottom:10px
 
 <h3>Statistik Hari Ini</h3>
 
-Transaksi : <b id="trx">0</b><br>
-Online : <b id="online">0</b><br>
-Offline : <b id="offline">0</b><br>
-Top Up : <b id="topup">0</b><br>
-Rider Aktif : <b id="aktif">0</b>
+Total Transaksi
+<b id="trx"></b>
 
-</div>
+<br>
 
-<div class="card">
+Online
+<b id="online"></b>
 
-<h3>Saldo Minus</h3>
+<br>
 
-<table id="minus"></table>
+Offline
+<b id="offline"></b>
+
+<br>
+
+Top Up
+<b id="topup"></b>
 
 </div>
 
 <script>
 
-var API="https://script.google.com/macros/s/AKfycbw6xZMLgUiZbq8K75kLmnoZ1tfl9cWYK68YJhI_x-m9cxYn37hKyhIHMq_nyTvwQlub/exec"
+var API="https://script.google.com/macros/s/AKfycbxVQWElE8xkIzHleAsT1s4ecXPDQ6gGpn39mzoKFkdsrBhjs7AnEJYAYZMGu4vsuKWy/exec"
 
 function load(){
 
@@ -59,20 +68,6 @@ document.getElementById("trx").innerHTML=d.transaksi
 document.getElementById("online").innerHTML=d.online
 document.getElementById("offline").innerHTML=d.offline
 document.getElementById("topup").innerHTML=d.topup
-document.getElementById("aktif").innerHTML=d.rideraktif
-
-var t=document.getElementById("minus")
-
-t.innerHTML=""
-
-d.minus.forEach(function(r){
-
-var row=t.insertRow()
-
-row.insertCell(0).innerHTML=r.nama
-row.insertCell(1).innerHTML=r.saldo
-
-})
 
 })
 
@@ -80,7 +75,7 @@ row.insertCell(1).innerHTML=r.saldo
 
 load()
 
-setInterval(load,3000)
+setInterval(load,5000)
 
 </script>
 
