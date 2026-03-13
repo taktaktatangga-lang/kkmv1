@@ -6,62 +6,31 @@
 
 <style>
 
-body{
-font-family:Arial;
-background:#f4f4f4;
-padding:10px;
-margin:0;
-}
+body{font-family:Arial;background:#f2f2f2;margin:0;padding:10px}
 
 .card{
 background:white;
 padding:15px;
 border-radius:10px;
-margin-bottom:10px;
+margin-bottom:10px
 }
 
 button{
-padding:12px;
 width:100%;
+padding:12px;
 background:#6B0F1A;
 color:white;
-border:none;
-margin-top:8px;
-border-radius:6px;
-font-weight:bold;
+border:none
 }
 
 table{
 width:100%;
-border-collapse:collapse;
-table-layout:fixed;
+border-collapse:collapse
 }
 
 input,select{
 width:100%;
-padding:6px;
-}
-
-th,td{
-padding:4px;
-text-align:left;
-}
-
-th{
-background:#D4AF37;
-color:#6B0F1A;
-}
-
-/* hilangkan spinner angka */
-
-input[type=number]::-webkit-inner-spin-button,
-input[type=number]::-webkit-outer-spin-button{
--webkit-appearance:none;
-margin:0;
-}
-
-input[type=number]{
--moz-appearance:textfield;
+padding:6px
 }
 
 </style>
@@ -77,19 +46,16 @@ Saldo
 </div>
 
 <div class="card">
-Transaksi Hari Ini<br>
-Online : <b id="online">0</b><br>
-Offline : <b id="offline">0</b>
+
+Online Hari Ini
+<b id="online">0</b>
+
+<br>
+
+Offline Hari Ini
+<b id="offline">0</b>
+
 </div>
-
-<div class="card">
-Rank Bulan Ini<br>
-Online : <span id="rankOnline"></span><br>
-Offline : <span id="rankOffline"></span>
-</div>
-
-
-<!-- CARD INPUT ORDER -->
 
 <div class="card">
 
@@ -98,15 +64,15 @@ Offline : <span id="rankOffline"></span>
 <table id="tabel">
 
 <tr>
-<th style="width:30%">ORDER</th>
-<th style="width:30%">TIPE ORDER</th>
-<th style="width:40%">KETERANGAN</th>
+<th>ORDER</th>
+<th>TIPE ORDER</th>
+<th>KETERANGAN</th>
 </tr>
 
 <tr>
 
 <td>
-<input type="number" inputmode="numeric" oninput="autoTambah(this)">
+<input type="number" oninput="autoTambah(this)">
 </td>
 
 <td>
@@ -117,48 +83,36 @@ Offline : <span id="rankOffline"></span>
 </td>
 
 <td>
-<input placeholder="keterangan">
+<input>
 </td>
 
 </tr>
 
 </table>
 
-<button onclick="kirim()">SIMPAN REKAPAN</button>
+<button onclick="simpan()">SIMPAN REKAPAN</button>
 
 </div>
-
-
-
-<!-- CARD TOP UP -->
 
 <div class="card">
 
-<h3>Top Up Saldo</h3>
+<h3>Top Up</h3>
 
-Nominal
-<input type="number" id="topupNominal" inputmode="numeric">
+<input id="nominal" placeholder="Nominal">
 
-Keterangan
-<input id="topupKet" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
+<input id="ket" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
 
 </div>
 
-
-
 <script>
 
-var API="https://script.google.com/macros/s/AKfycbw6DMyzSZa1T-PJ7FZn6NQg2_ro3HD27qDfs8aN8FIZ8DPJL-GQzdjH3LRRJe7k6Uun/exec"
+var API="https://script.google.com/macros/s/AKfycbynnQSj5fF0EcE1Dhgt6ZruWSe0DW7JYo7pTVhOOx77lxofutsMfd44nHaKZZmxM-pJ/exec"
 
 var rider=localStorage.getItem("rider")
 
-if(!rider){
-location.href="login.html"
-}
+document.getElementById("nama").innerHTML=localStorage.getItem("nama")
 
-document.getElementById("nama").innerHTML="Rider "+localStorage.getItem("nama")
-
-function loadDashboard(){
+function load(){
 
 fetch(API+"?action=dashboard&id="+rider)
 
@@ -166,27 +120,19 @@ fetch(API+"?action=dashboard&id="+rider)
 
 .then(d=>{
 
-var saldo=Number(d.saldo)||0
-
-document.getElementById("saldo").innerHTML="Rp "+saldo.toLocaleString("id-ID")
+document.getElementById("saldo").innerHTML="Rp "+Number(d.saldo).toLocaleString("id-ID")
 
 document.getElementById("online").innerHTML=d.online_today
 
 document.getElementById("offline").innerHTML=d.offline_today
 
-document.getElementById("rankOnline").innerHTML="#"+d.rank_online
-
-document.getElementById("rankOffline").innerHTML="#"+d.rank_offline
-
 })
 
 }
 
-
 function autoTambah(input){
 
 var row=input.parentNode.parentNode
-
 var tabel=document.getElementById("tabel")
 
 if(row.rowIndex==tabel.rows.length-1 && input.value!=""){
@@ -194,42 +140,35 @@ if(row.rowIndex==tabel.rows.length-1 && input.value!=""){
 var r=tabel.insertRow()
 
 r.innerHTML=`
-
-<td><input type="number" inputmode="numeric" oninput="autoTambah(this)"></td>
-
+<td><input type="number" oninput="autoTambah(this)"></td>
 <td>
 <select>
 <option value="online">online</option>
 <option value="offline">offline</option>
 </select>
 </td>
-
-<td>
-<input placeholder="keterangan">
-</td>
-
+<td><input></td>
 `
 
 }
 
 }
 
-
-function kirim(){
+function simpan(){
 
 var tabel=document.getElementById("tabel")
 
-var dataOrder=[]
+var data=[]
 
 for(var i=1;i<tabel.rows.length;i++){
 
 var nilai=tabel.rows[i].cells[0].children[0].value
 var jenis=tabel.rows[i].cells[1].children[0].value
-var ket=tabel.rows[i].cells[2].children[0].value.trim()
+var ket=tabel.rows[i].cells[2].children[0].value
 
-if(nilai!="" && Number(nilai)>0){
+if(nilai!=""){
 
-dataOrder.push({
+data.push({
 nilai:Number(nilai),
 jenis:jenis,
 ket:ket
@@ -239,92 +178,43 @@ ket:ket
 
 }
 
-
-var topupNominal=document.getElementById("topupNominal").value
-var topupKet=document.getElementById("topupKet").value
-
-
-if(dataOrder.length==0 && topupNominal==""){
-alert("Tidak ada data")
-return
-}
-
-
-/* kirim order */
-
-if(dataOrder.length>0){
-
 fetch(API,{
 method:"POST",
 body:JSON.stringify({
 action:"transaksi_batch",
 id:rider,
-data:dataOrder
+data:data
 })
 })
 
-}
+var nominal=document.getElementById("nominal").value
+var ket=document.getElementById("ket").value
 
-
-/* kirim topup */
-
-if(topupNominal!=""){
+if(nominal!=""){
 
 fetch(API,{
 method:"POST",
 body:JSON.stringify({
 action:"topup",
 id:rider,
-nominal:Number(topupNominal),
-ket:topupKet
+nominal:Number(nominal),
+ket:ket
 })
 })
 
 }
 
+alert("Tersimpan")
 
-alert("Rekapan tersimpan")
-
-loadDashboard()
-
-
-/* reset form */
-
-document.getElementById("topupNominal").value=""
-document.getElementById("topupKet").value=""
-
-var tabel=document.getElementById("tabel")
-
-tabel.innerHTML=tabel.rows[0].outerHTML+`
-
-<tr>
-
-<td><input type="number" inputmode="numeric" oninput="autoTambah(this)"></td>
-
-<td>
-<select>
-<option value="online">online</option>
-<option value="offline">offline</option>
-</select>
-</td>
-
-<td>
-<input placeholder="keterangan">
-</td>
-
-</tr>
-
-`
+load()
 
 }
 
+load()
 
-loadDashboard()
-
-setInterval(loadDashboard,2000)
+setInterval(load,3000)
 
 </script>
 
 </body>
-
 </html>
