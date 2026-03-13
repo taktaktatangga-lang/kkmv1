@@ -3,50 +3,59 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Login Rider</title>
+
 <style>
-body{font-family:Arial;background:#6B0F1A;display:flex;justify-content:center;align-items:center;height:100vh;}
-.box{background:white;padding:30px;border-radius:10px;width:260px;text-align:center;}
-input{width:100%;padding:10px;font-size:18px;text-align:center;margin:5px 0;}
-button{margin-top:10px;width:100%;padding:10px;background:#D4AF37;border:none;font-weight:bold;color:#6B0F1A;}
+body{font-family:Arial;background:#f4f4f4;padding:20px}
+.card{background:white;padding:20px;border-radius:10px}
+button{width:100%;padding:12px;background:#6B0F1A;color:white;border:none}
 </style>
+
 </head>
+
 <body>
 
-<div class="box">
+<div class="card">
+
 <h3>Login Rider</h3>
-<input id="id" placeholder="ID Rider">
-<button onclick="login()">MASUK</button>
+
+<input id="id" placeholder="Masukkan ID Rider">
+
+<button onclick="login()">LOGIN</button>
+
 </div>
 
 <script>
-var API="https://script.google.com/macros/s/AKfycbw6DMyzSZa1T-PJ7FZn6NQg2_ro3HD27qDfs8aN8FIZ8DPJL-GQzdjH3LRRJe7k6Uun/exec"
 
-// redirect otomatis jika sudah login
-if(localStorage.getItem("rider")){
-  location.href="dashboard.html";
-}
+var API="https://script.google.com/macros/s/AKfycbynnQSj5fF0EcE1Dhgt6ZruWSe0DW7JYo7pTVhOOx77lxofutsMfd44nHaKZZmxM-pJ/exec"
 
 function login(){
-  var id=document.getElementById("id").value.trim();
-  if(!id){ alert("Masukkan ID Rider!"); return; }
 
-  fetch(API+"?action=login&id="+id)
-    .then(r=>r.json())
-    .then(d=>{
-      if(d.status){
-        localStorage.setItem("rider",id);
-        localStorage.setItem("nama",d.nama);
-        location.href="dashboard.html";
-      } else {
-        alert("ID tidak ditemukan");
-      }
-    })
-    .catch(err=>{
-      alert("Error koneksi, coba lagi");
-    });
+var id=document.getElementById("id").value
+
+fetch(API+"?action=login&id="+id)
+
+.then(r=>r.json())
+
+.then(d=>{
+
+if(d.status=="ok"){
+
+localStorage.setItem("rider",d.id)
+localStorage.setItem("nama",d.nama)
+
+location.href="dashboard.html"
+
+}else{
+
+alert("ID tidak ditemukan")
+
 }
+
+})
+
+}
+
 </script>
 
 </body>
-
 </html>
