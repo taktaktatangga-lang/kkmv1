@@ -248,7 +248,7 @@ row.innerHTML=`
 function simpan(){
 
 var nilai=document.querySelectorAll(".order")
-var tipe = row.querySelector(".tipe").checked ? "offline" : "online"
+var tipe = document.querySelector(".tipe").checked ? "offline" : "online"
 var ket=document.querySelectorAll(".ket")
 
 var orders=[]
