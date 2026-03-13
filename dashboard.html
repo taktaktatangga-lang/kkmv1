@@ -22,9 +22,7 @@ border-radius:10px;
 margin-bottom:15px
 }
 
-table{
-width:100%
-}
+table{width:100%}
 
 th:nth-child(1){width:35%}
 th:nth-child(2){width:35%}
@@ -61,9 +59,7 @@ border-radius:6px;
 display:none
 }
 
-.error{
-background:#ef4444 !important
-}
+.error{background:#ef4444}
 
 </style>
 
@@ -104,7 +100,7 @@ Rank offline : <b id="rank_offline"></b>
 <tr>
 
 <td>
-<input class="order" oninput="cekInputAngka(this);autoTambahBaris()">
+<input class="order" oninput="cekAngka(this);autoBaris()">
 </td>
 
 <td>
@@ -129,7 +125,7 @@ Rank offline : <b id="rank_offline"></b>
 
 <h3>TOP UP</h3>
 
-<input id="topup" placeholder="Nominal Top Up" oninput="cekInputAngka(this)">
+<input id="topup" placeholder="Nominal Top Up" oninput="cekAngka(this)">
 
 <input id="ket_topup" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
 
@@ -148,7 +144,6 @@ var nama=localStorage.nama||""
 document.getElementById("nama").innerHTML=nama
 
 
-
 function toast(msg,err=false){
 
 var t=document.getElementById("toast")
@@ -164,12 +159,11 @@ setTimeout(()=>{t.style.display="none"},3000)
 }
 
 
-
-function cekInputAngka(el){
+function cekAngka(el){
 
 if(/\D/.test(el.value)){
 
-toast("Input hanya boleh angka",true)
+toast("Input hanya angka",true)
 
 el.value=el.value.replace(/\D/g,'')
 
@@ -187,16 +181,18 @@ fetch(API+"?action=dashboard&nama="+nama)
 
 .then(d=>{
 
-localStorage.saldo=d.saldo
+var saldo=Number(d.saldo||0)
+
+localStorage.saldo=saldo
 
 document.getElementById("saldo").innerHTML=
-"Rp "+Number(d.saldo).toLocaleString("id-ID")
+"Rp "+saldo.toLocaleString("id-ID")
 
-document.getElementById("online").innerHTML=d.online_today
-document.getElementById("offline").innerHTML=d.offline_today
+document.getElementById("online").innerHTML=d.online_today||0
+document.getElementById("offline").innerHTML=d.offline_today||0
 
-document.getElementById("rank_online").innerHTML="#"+d.rank_online
-document.getElementById("rank_offline").innerHTML="#"+d.rank_offline
+document.getElementById("rank_online").innerHTML="#"+(d.rank_online||0)
+document.getElementById("rank_offline").innerHTML="#"+(d.rank_offline||0)
 
 })
 
@@ -204,24 +200,24 @@ document.getElementById("rank_offline").innerHTML="#"+d.rank_offline
 
 
 
-function autoTambahBaris(){
+function autoBaris(){
 
 var table=document.getElementById("orderTable")
 
 var rows=table.querySelectorAll("tr")
 
-var lastRow=rows[rows.length-1]
+var last=rows[rows.length-1]
 
-var input=lastRow.querySelector(".order")
+var val=last.querySelector(".order").value
 
-if(input.value!=""){
+if(val!=""){
 
 var row=table.insertRow()
 
 row.innerHTML=`
 
 <td>
-<input class="order" oninput="cekInputAngka(this);autoTambahBaris()">
+<input class="order" oninput="cekAngka(this);autoBaris()">
 </td>
 
 <td>
@@ -245,13 +241,12 @@ row.innerHTML=`
 
 function simpan(){
 
-var orders=[]
-
 var nilai=document.querySelectorAll(".order")
 var tipe=document.querySelectorAll(".tipe")
 var ket=document.querySelectorAll(".ket")
 
-var totalOrder=0
+var orders=[]
+var total=0
 
 for(var i=0;i<nilai.length;i++){
 
@@ -272,51 +267,28 @@ tipe:tipe[i].value,
 ket:ket[i].value
 })
 
-totalOrder+=n
+total+=n
 
 }
 
 }
 
-
-
-var topup=Number(document.getElementById("topup").value)||0
 
 var saldo=Number(localStorage.saldo)||0
+var topup=Number(document.getElementById("topup").value)||0
 
-
-
-var minimalTopup=0
 
 if(saldo<0){
 
-minimalTopup=Math.ceil(totalOrder*0.30)
+var wajib=Math.ceil(total*0.30)
 
-}else{
+if(topup<wajib){
 
-minimalTopup=Math.ceil(totalOrder*0.20)
-
-}
-
-
-
-if(topup>0 && topup<minimalTopup){
-
-toast("Minimal top up Rp "+minimalTopup.toLocaleString("id-ID"),true)
+alert("Anda wajib depo harian 30% hari ini sebesar Rp "+wajib.toLocaleString("id-ID"))
 
 return
 
 }
-
-
-
-var data={
-
-action:"simpan_rekapan",
-nama:nama,
-orders:orders,
-topup:topup,
-ket_topup:document.getElementById("ket_topup").value
 
 }
 
@@ -324,22 +296,23 @@ ket_topup:document.getElementById("ket_topup").value
 
 fetch(API,{
 method:"POST",
-body:JSON.stringify(data)
+body:JSON.stringify({
+action:"simpan_rekapan",
+nama:nama,
+orders:orders,
+topup:topup,
+ket_topup:document.getElementById("ket_topup").value
+})
 })
 
 .then(r=>r.json())
-
 .then(d=>{
 
 if(d.status){
 
 toast("Rekapan berhasil disimpan")
 
-setTimeout(()=>{
-
-location.reload()
-
-},1200)
+setTimeout(()=>location.reload(),1200)
 
 }else{
 
