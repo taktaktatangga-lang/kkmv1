@@ -5,53 +5,71 @@
 <title>Login Rider</title>
 
 <style>
+
 body{
 font-family:Arial;
-background:#111;
+background:#0f172a;
 color:white;
-text-align:center;
-padding-top:100px
+display:flex;
+justify-content:center;
+align-items:center;
+height:100vh
+}
+
+.card{
+background:#1e293b;
+padding:30px;
+border-radius:12px;
+width:260px;
+text-align:center
 }
 
 input{
-padding:15px;
-font-size:20px;
-width:200px;
+width:100%;
+padding:12px;
+font-size:18px;
+margin-top:10px;
 text-align:center
 }
 
 button{
-padding:15px 40px;
-font-size:18px;
-margin-top:20px;
-background:#00b894;
-color:white;
+width:100%;
+padding:14px;
+margin-top:15px;
+background:#22c55e;
 border:none;
-border-radius:8px
+border-radius:8px;
+font-size:16px;
+color:white
 }
+
 </style>
 </head>
 
 <body>
 
+<div class="card">
+
 <h2>LOGIN RIDER</h2>
 
 <input id="id" placeholder="USER ID">
 
-<br>
-
 <button onclick="login()">LOGIN</button>
+
+</div>
 
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbw8j_0okewUOZmrH2LKxQ58FaiclT2PvWtR0UjSGEEWfiY69iHZslCU15gRb-2alQa5/exec"
+const API="https://script.google.com/macros/s/AKfycbwltfctNlXXkMQmATIAOsSX1Hb7k-pgo1U2RQ_WdbtFUaFfatKAAjq4ud6GESM6uom8/exec"
 
 function login(){
 
 var id=document.getElementById("id").value
 
 fetch(API+"?action=login&id="+id)
+
 .then(r=>r.json())
+
 .then(d=>{
 
 if(d.status){
