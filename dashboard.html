@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
 
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Dashboard Rider</title>
 
 <style>
@@ -26,19 +26,19 @@ table{
 width:100%
 }
 
-th:nth-child(1){width:30%}
+th:nth-child(1){width:35%}
 th:nth-child(2){width:35%}
-th:nth-child(3){width:35%}
+th:nth-child(3){width:30%}
 
 input,select{
 width:100%;
-padding:8px;
+padding:10px;
 font-size:14px
 }
 
 button{
 width:100%;
-padding:15px;
+padding:16px;
 background:#22c55e;
 border:none;
 border-radius:10px;
@@ -66,13 +66,13 @@ background:#ef4444 !important
 }
 
 </style>
+
 </head>
 
 <body>
 
 <h3 id="nama"></h3>
-
-<h2 id="saldo"></h2>
+<h2 id="saldo">Loading...</h2>
 
 <div class="card stat">
 
@@ -87,6 +87,7 @@ Rank offline : <b id="rank_offline"></b>
 </div>
 
 </div>
+
 
 <div class="card">
 
@@ -103,7 +104,7 @@ Rank offline : <b id="rank_offline"></b>
 <tr>
 
 <td>
-<input class="order" oninput="autoTambahBaris()">
+<input class="order" oninput="cekInputAngka(this);autoTambahBaris()">
 </td>
 
 <td>
@@ -123,11 +124,12 @@ Rank offline : <b id="rank_offline"></b>
 
 </div>
 
+
 <div class="card">
 
 <h3>TOP UP</h3>
 
-<input id="topup" placeholder="NOMINAL">
+<input id="topup" placeholder="Nominal Top Up" oninput="cekInputAngka(this)">
 
 <input id="ket_topup" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
 
@@ -141,13 +143,11 @@ Rank offline : <b id="rank_offline"></b>
 
 const API="https://script.google.com/macros/s/AKfycbx1LYxb3aPHPr_FWPYM3YFkO-dyus5i1qxJm-epzcSaHfDo4ls8I_wisiZgTSHjS8j2/exec"
 
-var nama=localStorage.nama||"-"
-var saldo=Number(localStorage.saldo)||0
+var nama=localStorage.nama||""
 
 document.getElementById("nama").innerHTML=nama
 
-document.getElementById("saldo").innerHTML=
-"Rp "+saldo.toLocaleString("id-ID")
+
 
 function toast(msg,err=false){
 
@@ -163,7 +163,21 @@ setTimeout(()=>{t.style.display="none"},3000)
 
 }
 
-loadDashboard()
+
+
+function cekInputAngka(el){
+
+if(/\D/.test(el.value)){
+
+toast("Input hanya boleh angka",true)
+
+el.value=el.value.replace(/\D/g,'')
+
+}
+
+}
+
+
 
 function loadDashboard(){
 
@@ -172,6 +186,11 @@ fetch(API+"?action=dashboard&nama="+nama)
 .then(r=>r.json())
 
 .then(d=>{
+
+localStorage.saldo=d.saldo
+
+document.getElementById("saldo").innerHTML=
+"Rp "+Number(d.saldo).toLocaleString("id-ID")
 
 document.getElementById("online").innerHTML=d.online_today
 document.getElementById("offline").innerHTML=d.offline_today
@@ -182,6 +201,8 @@ document.getElementById("rank_offline").innerHTML="#"+d.rank_offline
 })
 
 }
+
+
 
 function autoTambahBaris(){
 
@@ -200,7 +221,7 @@ var row=table.insertRow()
 row.innerHTML=`
 
 <td>
-<input class="order" oninput="autoTambahBaris()">
+<input class="order" oninput="cekInputAngka(this);autoTambahBaris()">
 </td>
 
 <td>
@@ -220,6 +241,8 @@ row.innerHTML=`
 
 }
 
+
+
 function simpan(){
 
 var orders=[]
@@ -228,9 +251,18 @@ var nilai=document.querySelectorAll(".order")
 var tipe=document.querySelectorAll(".tipe")
 var ket=document.querySelectorAll(".ket")
 
+var totalOrder=0
+
 for(var i=0;i<nilai.length;i++){
 
 var n=Number(nilai[i].value)||0
+
+if(n>0 && n<8000){
+
+toast("Minimal order 8000",true)
+return
+
+}
 
 if(n>=8000){
 
@@ -240,19 +272,55 @@ tipe:tipe[i].value,
 ket:ket[i].value
 })
 
+totalOrder+=n
+
 }
 
 }
+
+
+
+var topup=Number(document.getElementById("topup").value)||0
+
+var saldo=Number(localStorage.saldo)||0
+
+
+
+var minimalTopup=0
+
+if(saldo<0){
+
+minimalTopup=Math.ceil(totalOrder*0.30)
+
+}else{
+
+minimalTopup=Math.ceil(totalOrder*0.20)
+
+}
+
+
+
+if(topup>0 && topup<minimalTopup){
+
+toast("Minimal top up Rp "+minimalTopup.toLocaleString("id-ID"),true)
+
+return
+
+}
+
+
 
 var data={
 
 action:"simpan_rekapan",
 nama:nama,
 orders:orders,
-topup:Number(document.getElementById("topup").value)||0,
+topup:topup,
 ket_topup:document.getElementById("ket_topup").value
 
 }
+
+
 
 fetch(API,{
 method:"POST",
@@ -265,12 +333,12 @@ body:JSON.stringify(data)
 
 if(d.status){
 
-localStorage.saldo=d.saldo
-
 toast("Rekapan berhasil disimpan")
 
 setTimeout(()=>{
+
 location.reload()
+
 },1200)
 
 }else{
@@ -281,11 +349,13 @@ toast("Gagal menyimpan",true)
 
 })
 
-.catch(()=>toast("Server error",true))
-
 }
 
+
+
 window.onload=function(){
+
+loadDashboard()
 
 var first=document.querySelector(".order")
 
