@@ -166,16 +166,60 @@ var nilai=tabel.rows[i].cells[0].children[0].value
 var jenis=tabel.rows[i].cells[1].children[0].value
 var ket=tabel.rows[i].cells[2].children[0].value
 
-if(nilai!=""){
+nilai = Number(nilai)
+
+if(!isNaN(nilai) && nilai>0){
 
 data.push({
-nilai:Number(nilai),
+nilai:nilai,
 jenis:jenis,
 ket:ket
 })
 
 }
 
+}
+
+if(data.length==0 && document.getElementById("nominal").value==""){
+alert("Tidak ada data untuk disimpan")
+return
+}
+
+
+
+fetch(API,{
+method:"POST",
+body:JSON.stringify({
+action:"transaksi_batch",
+id:rider,
+data:data
+})
+})
+
+
+
+var nominal=document.getElementById("nominal").value
+var ket=document.getElementById("ket").value
+
+if(nominal!=""){
+
+fetch(API,{
+method:"POST",
+body:JSON.stringify({
+action:"topup",
+id:rider,
+nominal:Number(nominal),
+ket:ket
+})
+})
+
+}
+
+alert("Rekapan berhasil disimpan")
+
+load()
+
+}
 }
 
 fetch(API,{
