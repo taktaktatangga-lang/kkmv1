@@ -1,100 +1,10 @@
-<!DOCTYPE html>
-<html>
-<head>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Login Rider</title>
-
-<style>
-
-body{
-font-family:Arial;
-background:#0f172a;
-color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh
-}
-
-.card{
-background:#1e293b;
-padding:30px;
-border-radius:10px;
-width:260px;
-text-align:center
-}
-
-input{
-width:100%;
-padding:12px;
-margin-top:10px;
-font-size:18px;
-text-align:center
-}
-
-button{
-width:100%;
-padding:14px;
-margin-top:15px;
-background:#22c55e;
-border:none;
-border-radius:8px;
-font-size:16px;
-color:white
-}
-
-#toast{
-position:fixed;
-bottom:20px;
-right:20px;
-background:#22c55e;
-padding:10px 16px;
-border-radius:6px;
-display:none
-}
-
-.error{
-background:#ef4444 !important
-}
-
-</style>
-</head>
-
-<body>
-
-<div class="card">
-
-<h2>LOGIN RIDER</h2>
-
-<input id="id" placeholder="USER ID">
-
-<button onclick="login()">LOGIN</button>
-
-</div>
-
-<div id="toast"></div>
-
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbyjJ5rtb03QTO0rnLkFp96y3UM7zFpCeOX_erSQYykQ1G0vVwHzBJ_pIDk53p9HgE5f/exec"
-
-function toast(msg,err=false){
-
-var t=document.getElementById("toast")
-
-t.innerText=msg
-
-t.className=err?"error":""
-
-t.style.display="block"
-
-setTimeout(()=>{t.style.display="none"},3000)
-
-}
+const API="https://script.google.com/macros/s/AKfycbzjGr1tPkJCGOsu0ioJ2REXjxS8lPkpErKXGHRCraF9_6AqUsZyT-TLb8ukeECKsq6N/exec"
 
 function login(){
 
-var id=document.getElementById("id").value
+var id=document.getElementById("idrider").value
 
 fetch(API+"?action=login&id="+id)
 
@@ -104,28 +14,20 @@ fetch(API+"?action=login&id="+id)
 
 if(d.status){
 
-toast("Login berhasil")
-
+localStorage.id=id
 localStorage.nama=d.nama
 localStorage.saldo=d.saldo
 
-setTimeout(()=>{
-location="dashboard.html"
-},800)
+location.href="dashboard.html"
 
 }else{
 
-toast("ID tidak ditemukan",true)
+alert("ID Rider tidak ditemukan")
 
 }
 
 })
 
-.catch(()=>toast("Server error",true))
-
 }
 
 </script>
-
-</body>
-</html>
