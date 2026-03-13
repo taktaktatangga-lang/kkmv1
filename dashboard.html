@@ -1,242 +1,130 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-
 <meta name="viewport" content="width=device-width,initial-scale=1">
-
 <title>Dashboard Rider</title>
 
 <style>
 
 body{
 font-family:Arial;
-background:#f2f2f2;
+background:#0f172a;
+color:white;
 margin:0;
-padding:10px
+padding:15px
 }
 
 .card{
-background:white;
+background:#1e293b;
 padding:15px;
 border-radius:10px;
-margin-bottom:10px
-}
-
-table{
-width:100%;
-border-collapse:collapse
+margin-bottom:15px
 }
 
 input,select{
 width:100%;
-padding:8px
+padding:10px;
+margin-top:5px;
+margin-bottom:10px;
+font-size:16px
 }
 
 button{
 width:100%;
-padding:12px;
-background:#6B0F1A;
-color:white;
-border:none
+padding:15px;
+background:#22c55e;
+border:none;
+border-radius:10px;
+font-size:18px;
+color:white
+}
+
+.stat{
+display:flex;
+justify-content:space-between;
 }
 
 </style>
-
 </head>
 
 <body>
 
-<div class="card">
-
 <h3 id="nama"></h3>
+<h2 id="saldo"></h2>
 
-Saldo
-<h2 id="saldo">0</h2>
-
+<div class="card stat">
+<div>
+Online hari ini : <b id="online"></b><br>
+Offline hari ini : <b id="offline"></b>
 </div>
 
+<div style="text-align:right">
+Rank online : <b id="ronline"></b><br>
+Rank offline : <b id="roffline"></b>
+</div>
+</div>
 
 
 <div class="card">
 
-<div style="display:flex;justify-content:space-between">
+<h3>INPUT ORDER</h3>
 
-<div>
+<input id="order1" placeholder="ORDER">
 
-online hari ini : <b id="online">0</b>
-
-</div>
-
-<div>
-
-Rank online : <b id="rankOnline">-</b>
-
-</div>
-
-</div>
-
-<br>
-
-<div style="display:flex;justify-content:space-between">
-
-<div>
-
-offline hari ini : <b id="offline">0</b>
-
-</div>
-
-<div>
-
-Rank offline : <b id="rankOffline">-</b>
-
-</div>
-
-</div>
-
-</div>
-
-
-
-<div class="card">
-
-<h3>Input Order</h3>
-
-<table id="tabel">
-
-<tr>
-<th>ORDER</th>
-<th>TIPE ORDER</th>
-<th>KETERANGAN</th>
-</tr>
-
-<tr>
-
-<td><input type="number"></td>
-
-<td>
-
-<select>
-
-<option value="online">online</option>
-
-<option value="offline">offline</option>
-
+<select id="tipe1">
+<option value="online">ONLINE</option>
+<option value="offline">OFFLINE</option>
 </select>
 
-</td>
-
-<td><input></td>
-
-</tr>
-
-</table>
-
-<button onclick="tambah()">Tambah Baris</button>
+<input id="ket1" placeholder="KETERANGAN">
 
 </div>
-
 
 
 <div class="card">
 
-<h3>Top Up</h3>
+<h3>TOP UP</h3>
 
-<input id="topupNominal" placeholder="Nominal">
+<input id="topup" placeholder="NOMINAL">
 
-<input id="topupKet" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
+<input id="ket_topup" placeholder="TF KE BCA/DANA/OVO/GOPAY/CASH DI">
 
 </div>
-
-
 
 <button onclick="simpan()">SIMPAN REKAPAN</button>
 
 
-
 <script>
 
-var API="https://script.google.com/macros/s/AKfycbyt8kms9gDv4mI9-_GmHjVfcbWwPTcw86K7f2_oqvy5unDzRlWMbhpQh1XNF9NOLG4V/exec"
+const API="https://script.google.com/macros/s/AKfycbw8j_0okewUOZmrH2LKxQ58FaiclT2PvWtR0UjSGEEWfiY69iHZslCU15gRb-2alQa5/exec"
 
-var rider=localStorage.getItem("rider")
+var nama=localStorage.nama
 
-document.getElementById("nama").innerHTML=localStorage.getItem("nama")
+document.getElementById("nama").innerHTML=nama
 
+loadDashboard()
 
+function loadDashboard(){
 
-function load(){
-
-fetch(API+"?action=dashboard&id="+rider)
-
+fetch(API+"?action=dashboard&nama="+nama)
 .then(r=>r.json())
-
 .then(d=>{
 
-document.getElementById("saldo").innerHTML="Rp "+Number(d.saldo).toLocaleString("id-ID")
-
-document.getElementById("online").innerHTML=d.online_today || 0
-
-document.getElementById("offline").innerHTML=d.offline_today || 0
-
-document.getElementById("rankOnline").innerHTML="#"+(d.rank_online||"-")
-
-document.getElementById("rankOffline").innerHTML="#"+(d.rank_offline||"-")
+document.getElementById("online").innerHTML=d.online_today
+document.getElementById("offline").innerHTML=d.offline_today
+document.getElementById("ronline").innerHTML=d.rank_online
+document.getElementById("roffline").innerHTML=d.rank_offline
 
 })
 
 }
 
 
-
-function tambah(){
-
-var t=document.getElementById("tabel")
-
-var r=t.insertRow()
-
-r.innerHTML=`
-
-<td><input type="number"></td>
-
-<td>
-
-<select>
-
-<option value="online">online</option>
-
-<option value="offline">offline</option>
-
-</select>
-
-</td>
-
-<td><input></td>
-
-`
-
-}
-
-
-
 function simpan(){
 
-var t=document.getElementById("tabel")
+var order = Number(document.getElementById("order1").value)||0
 
-var transaksi=[]
-
-for(var i=1;i<t.rows.length;i++){
-
-var nominal=t.rows[i].cells[0].children[0].value
-
-var tipe=t.rows[i].cells[1].children[0].value
-
-var ket=t.rows[i].cells[2].children[0].value
-
-if(nominal!=""){
-
-nominal=Number(nominal)
-
-if(nominal<8000){
+if(order>0 && order<8000){
 
 alert("Minimal order 8000")
 
@@ -244,74 +132,38 @@ return
 
 }
 
-if(nominal%1000!=0){
-
-alert("Nilai harus ribuan")
-
-return
-
-}
-
-transaksi.push({
-
-nominal:nominal,
-tipe:tipe,
-keterangan:ket
-
-})
-
-}
-
-}
-
-
-
-var topupNominal=document.getElementById("topupNominal").value
-
-var topupKet=document.getElementById("topupKet").value
-
-
-
-fetch(API,{
-
-method:"POST",
-
-body:JSON.stringify({
+var data={
 
 action:"simpan_rekapan",
+nama:nama,
 
-id:rider,
+orders:[
+{
+nilai:order,
+tipe:document.getElementById("tipe1").value,
+ket:document.getElementById("ket1").value
+}
+],
 
-transaksi:transaksi,
-
-topup:{
-
-nominal:Number(topupNominal)||0,
-keterangan:topupKet
+topup:Number(document.getElementById("topup").value)||0,
+ket_topup:document.getElementById("ket_topup").value
 
 }
 
+fetch(API,{
+method:"POST",
+body:JSON.stringify(data)
 })
-
-})
-
 .then(r=>r.json())
-
 .then(d=>{
 
-alert("Rekapan tersimpan")
+document.getElementById("saldo").innerHTML="Saldo : Rp "+d.saldo
 
-location.reload()
+loadDashboard()
 
 })
 
 }
-
-
-
-load()
-
-setInterval(load,3000)
 
 </script>
 
