@@ -104,10 +104,10 @@ Rank offline : <b id="rank_offline"></b>
 </td>
 
 <td>
-<select class="tipe">
-<option value="online">online</option>
-<option value="offline">offline</option>
-</select>
+<label class="offlineBox">
+<input type="checkbox" class="tipe">
+OFFLINE
+</label>
 </td>
 
 <td>
@@ -248,7 +248,7 @@ row.innerHTML=`
 function simpan(){
 
 var nilai=document.querySelectorAll(".order")
-var tipe=document.querySelectorAll(".tipe")
+var tipe = row.querySelector(".tipe").checked ? "offline" : "online"
 var ket=document.querySelectorAll(".ket")
 
 var orders=[]
