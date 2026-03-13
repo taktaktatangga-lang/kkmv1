@@ -34,7 +34,6 @@ Total transaksi hari ini
 
 </div>
 
-
 <div class="card">
 
 <h3>TOP ONLINE</h3>
@@ -43,7 +42,6 @@ Total transaksi hari ini
 
 </div>
 
-
 <div class="card">
 
 <h3>TOP OFFLINE</h3>
@@ -51,8 +49,6 @@ Total transaksi hari ini
 <div id="offline"></div>
 
 </div>
-
-
 
 <script>
 
@@ -67,17 +63,11 @@ fetch(API+"?action=admin")
 document.getElementById("total").innerHTML=d.total_today
 
 d.top_online.forEach(x=>{
-
-document.getElementById("online").innerHTML+=
-x.nama+" : "+x.total+"<br>"
-
+document.getElementById("online").innerHTML+=x.nama+" : "+x.total+"<br>"
 })
 
 d.top_offline.forEach(x=>{
-
-document.getElementById("offline").innerHTML+=
-x.nama+" : "+x.total+"<br>"
-
+document.getElementById("offline").innerHTML+=x.nama+" : "+x.total+"<br>"
 })
 
 })
