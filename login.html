@@ -3,45 +3,20 @@
 <head>
 <meta name="viewport" content="width=device-width,initial-scale=1">
 
-<title>Login Rider</title>
-
 <style>
 
 body{
 font-family:Arial;
 background:#0f172a;
 color:white;
-display:flex;
-justify-content:center;
-align-items:center;
-height:100vh
+padding:20px
 }
 
 .card{
 background:#1e293b;
-padding:30px;
+padding:20px;
 border-radius:10px;
-width:260px;
-text-align:center
-}
-
-input{
-width:100%;
-padding:12px;
-margin-top:10px;
-font-size:18px;
-text-align:center
-}
-
-button{
-width:100%;
-padding:14px;
-margin-top:15px;
-background:#22c55e;
-border:none;
-border-radius:8px;
-font-size:16px;
-color:white
+margin-bottom:20px
 }
 
 </style>
@@ -49,46 +24,63 @@ color:white
 
 <body>
 
+<h2>ADMIN DASHBOARD</h2>
+
 <div class="card">
 
-<h2>LOGIN RIDER</h2>
+Total transaksi hari ini
 
-<input id="id" placeholder="USER ID">
-
-<button onclick="login()">LOGIN</button>
+<h1 id="total"></h1>
 
 </div>
+
+
+<div class="card">
+
+<h3>TOP ONLINE</h3>
+
+<div id="online"></div>
+
+</div>
+
+
+<div class="card">
+
+<h3>TOP OFFLINE</h3>
+
+<div id="offline"></div>
+
+</div>
+
+
 
 <script>
 
 const API="https://script.google.com/macros/s/AKfycbx1LYxb3aPHPr_FWPYM3YFkO-dyus5i1qxJm-epzcSaHfDo4ls8I_wisiZgTSHjS8j2/exec"
 
-function login(){
-
-var id=document.getElementById("id").value
-
-fetch(API+"?action=login&id="+id)
+fetch(API+"?action=admin")
 
 .then(r=>r.json())
 
 .then(d=>{
 
-if(d.status){
+document.getElementById("total").innerHTML=d.total_today
 
-localStorage.nama=d.nama
-localStorage.saldo=d.saldo
+d.top_online.forEach(x=>{
 
-location="dashboard.html"
-
-}else{
-
-alert("ID tidak ditemukan")
-
-}
+document.getElementById("online").innerHTML+=
+x.nama+" : "+x.total+"<br>"
 
 })
 
-}
+d.top_offline.forEach(x=>{
+
+document.getElementById("offline").innerHTML+=
+x.nama+" : "+x.total+"<br>"
+
+})
+
+})
 
 </script>
 
