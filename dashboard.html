@@ -187,6 +187,12 @@ localStorage.saldo=saldo
 
 document.getElementById("saldo").innerHTML=
 "Rp "+saldo.toLocaleString("id-ID")
+  // WARNING SALDO MINUS
+if(saldo < 0){
+
+toast("⚠ Saldo anda minus. Anda wajib deposit harian minimal 30%",true)
+
+}
 
 document.getElementById("online").innerHTML=d.online_today||0
 document.getElementById("offline").innerHTML=d.offline_today||0
