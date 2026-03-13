@@ -1,10 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width,initial-scale=1">
+
+<style>
+
+body{
+font-family:Arial;
+background:#0f172a;
+color:white;
+display:flex;
+height:100vh;
+justify-content:center;
+align-items:center
+}
+
+.card{
+background:#1e293b;
+padding:30px;
+border-radius:10px;
+width:280px
+}
+
+input{
+width:100%;
+padding:12px;
+margin-bottom:10px
+}
+
+button{
+width:100%;
+padding:12px;
+background:#22c55e;
+border:none;
+color:white
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="card">
+
+<h3>LOGIN RIDER</h3>
+
+<input id="idrider" placeholder="ID Rider">
+
+<button onclick="login()">LOGIN</button>
+
+</div>
+
 <script>
 
-const API="https://script.google.com/macros/s/AKfycbzjGr1tPkJCGOsu0ioJ2REXjxS8lPkpErKXGHRCraF9_6AqUsZyT-TLb8ukeECKsq6N/exec"
+const API="https://script.google.com/macros/s/AKfycbx1LYxb3aPHPr_FWPYM3YFkO-dyus5i1qxJm-epzcSaHfDo4ls8I_wisiZgTSHjS8j2/exec"
 
 function login(){
 
 var id=document.getElementById("idrider").value
+
+if(!id){
+
+alert("Masukkan ID Rider")
+return
+
+}
 
 fetch(API+"?action=login&id="+id)
 
@@ -14,11 +76,13 @@ fetch(API+"?action=login&id="+id)
 
 if(d.status){
 
-localStorage.id=id
-localStorage.nama=d.nama
-localStorage.saldo=d.saldo
+// simpan data login
+localStorage.setItem("idrider",id)
+localStorage.setItem("nama",d.nama)
+localStorage.setItem("saldo",d.saldo)
 
-location.href="dashboard.html"
+// pindah dashboard
+window.location="dashboard.html"
 
 }else{
 
@@ -31,3 +95,6 @@ alert("ID Rider tidak ditemukan")
 }
 
 </script>
+
+</body>
+</html>
